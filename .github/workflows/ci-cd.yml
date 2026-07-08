@@ -1,24 +1,17 @@
 name: CI/CD Stuffing (monorepo)
 
-# Declencheurs : a chaque push ou pull request sur main
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
 
-# Permissions necessaires pour pousser les images vers GHCR
 permissions:
   contents: read
   packages: write
 
 jobs:
 
-  # ============================================================
-  # 1) DETECTER QUELS DOSSIERS ONT CHANGE
-  #    Ce job calcule des "drapeaux" (true/false) par service,
-  #    pour ne (re)construire que ce qui a change.
-  # ============================================================
   changes:
     runs-on: ubuntu-latest
     outputs:
@@ -41,15 +34,16 @@ jobs:
             optimisation:
               - 'OptimsationMicros/**'
 
-  # ============================================================
-  # 2) BACKEND SPRING BOOT (Maven + tests + image Docker)
-  # ============================================================
+  # ================= BACKEND =================
   backend:
     needs: changes
     if: ${{ needs.changes.outputs.backend == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Nom d'image en minuscules (obligatoire GHCR)
+        run: echo "IMAGE_REPO=${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
 
       - name: Installer JDK 21
         uses: actions/setup-java@v4
@@ -63,6 +57,7 @@ jobs:
         run: mvn -B verify
 
       - name: Connexion a GHCR
+        if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -73,18 +68,19 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./backendSpringg
-          push: true
-          tags: ghcr.io/${{ github.repository }}/backend:latest
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ghcr.io/${{ env.IMAGE_REPO }}/backend:latest
 
-  # ============================================================
-  # 3) FRONTEND ANGULAR (npm build + image Docker)
-  # ============================================================
+  # ================= FRONTEND =================
   frontend:
     needs: changes
     if: ${{ needs.changes.outputs.frontend == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Nom d'image en minuscules (obligatoire GHCR)
+        run: echo "IMAGE_REPO=${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
 
       - name: Installer Node.js
         uses: actions/setup-node@v4
@@ -102,6 +98,7 @@ jobs:
         run: npm run build
 
       - name: Connexion a GHCR
+        if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -112,18 +109,19 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./frontendAngular
-          push: true
-          tags: ghcr.io/${{ github.repository }}/frontend:latest
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ghcr.io/${{ env.IMAGE_REPO }}/frontend:latest
 
-  # ============================================================
-  # 4) CHATBOT (Python FastAPI + image Docker)
-  # ============================================================
+  # ================= CHATBOT =================
   chatbot:
     needs: changes
     if: ${{ needs.changes.outputs.chatbot == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Nom d'image en minuscules (obligatoire GHCR)
+        run: echo "IMAGE_REPO=${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
 
       - name: Installer Python
         uses: actions/setup-python@v5
@@ -142,6 +140,7 @@ jobs:
         run: python -m compileall .
 
       - name: Connexion a GHCR
+        if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -152,18 +151,19 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./chatbotMicros
-          push: true
-          tags: ghcr.io/${{ github.repository }}/chatbot:latest
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ghcr.io/${{ env.IMAGE_REPO }}/chatbot:latest
 
-  # ============================================================
-  # 5) OPTIMISATION (Python OR-Tools + image Docker)
-  # ============================================================
+  # ================= OPTIMISATION =================
   optimisation:
     needs: changes
     if: ${{ needs.changes.outputs.optimisation == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Nom d'image en minuscules (obligatoire GHCR)
+        run: echo "IMAGE_REPO=${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
 
       - name: Installer Python
         uses: actions/setup-python@v5
@@ -182,6 +182,7 @@ jobs:
         run: python -m compileall .
 
       - name: Connexion a GHCR
+        if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -192,5 +193,5 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./OptimsationMicros
-          push: true
-          tags: ghcr.io/${{ github.repository }}/optimisation:latest
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ghcr.io/${{ env.IMAGE_REPO }}/optimisation:latest
