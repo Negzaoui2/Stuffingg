@@ -1,11 +1,8 @@
-import time
-
 from fastapi import APIRouter, HTTPException
 
 from app.models.schemas import (
     OptimizationRequest,
     OptimizationResponse,
-    OptimizationWeights,
 )
 from app.services.data_provider import DatasetProvider, PostgresProvider
 from app.services.optimizer import StaffingOptimizer

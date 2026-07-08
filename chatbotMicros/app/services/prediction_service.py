@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
-from sklearn.metrics import accuracy_score, classification_report
+from sklearn.metrics import accuracy_score
 
 from app.services.data_source_service import load_hr_dataframe
 
@@ -180,11 +179,11 @@ class PredictionService:
 
 		lines = [
 			"**📈 Informations sur le modèle de prédiction d'attrition :**\n",
-			f"- Algorithme : Random Forest (100 arbres)",
+			"- Algorithme : Random Forest (100 arbres)",
 			f"- Précision (accuracy) : {self._accuracy:.1%}",
 			f"- Nombre de features : {len(self.NUMERIC_FEATURES) + len(self.CATEGORICAL_FEATURES)}",
 			f"- Dataset : {len(self._df)} enregistrements",
-			f"\n**Top 10 features les plus importantes :**",
+			"\n**Top 10 features les plus importantes :**",
 		]
 		for feat, imp in list(self._feature_importances.items())[:10]:
 			bar = "█" * int(imp * 50)

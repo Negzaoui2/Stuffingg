@@ -112,7 +112,6 @@ class PlanningService:
 		if not self.is_ready:
 			return "Dataset non chargé."
 		df = self._active.copy()
-		text = message.lower()
 
 		lines = ["**Suggestions d'optimisation de la charge :**", ""]
 

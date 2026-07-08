@@ -81,22 +81,20 @@ class ExportService:
 		from datetime import datetime
 
 		from reportlab.lib import colors
-		from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
+		from reportlab.lib.enums import TA_CENTER
 		from reportlab.lib.pagesizes import A4, landscape
 		from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
-		from reportlab.lib.units import cm, mm
+		from reportlab.lib.units import cm
 		from reportlab.platypus import (
 			SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer,
-			HRFlowable, Frame, PageTemplate, BaseDocTemplate,
+			HRFlowable,
 		)
 
 		# Couleurs de la charte
 		PRIMARY = colors.HexColor("#1B2A4A")      # Bleu foncé
 		ACCENT = colors.HexColor("#2E86AB")       # Bleu vif
-		LIGHT_BG = colors.HexColor("#F4F7FA")     # Gris très clair
 		ROW_ALT = colors.HexColor("#EAF2F8")      # Bleu pâle alterné
 		HEADER_BG = colors.HexColor("#1B2A4A")    # Header tableau
-		TEXT_DARK = colors.HexColor("#2C3E50")     # Texte principal
 
 		sheets = self._get_report_data(report_type)
 		buffer = io.BytesIO()

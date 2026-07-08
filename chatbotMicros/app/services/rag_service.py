@@ -18,7 +18,6 @@ try:
 	_HAVE_SENTENCE_TRANSFORMERS = True
 except ImportError:
 	_HAVE_SENTENCE_TRANSFORMERS = False
-	from sklearn.feature_extraction.text import TfidfVectorizer
 
 
 @dataclass(frozen=True)
@@ -149,7 +148,7 @@ class RagService:
 			cache_path = Path(".cache") / f".embeddings_cache_{cache_file}_{len(texts)}_{len(existing_cols)}.npy"
 			cache_path.parent.mkdir(parents=True, exist_ok=True)
 			if cache_path.exists():
-				print(f"[RAG] Chargement des embeddings depuis le cache disque...")
+				print("[RAG] Chargement des embeddings depuis le cache disque...")
 				self._matrix = np.load(str(cache_path))
 				print(f"[RAG] Embeddings charges depuis cache : shape={self._matrix.shape}")
 			else:
