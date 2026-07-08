@@ -1,4 +1,4 @@
-﻿package com.negzaoui.stuffing;
+package com.negzaoui.stuffing;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Test du reset password.
  * Le endpoint /api/auth/reset-password/* est public (permitAll),
  * donc pas besoin de token Keycloak pour le tester.
- * On utilise le compte admin@soprahr.com crÃ©Ã© par DataInitializer.
+ * On utilise le compte admin@soprahr.com créé par DataInitializer.
  */
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -34,7 +34,7 @@ class PasswordResetIntegrationTest {
 
     @Test
     void resetPassword_flow_shouldWork() throws Exception {
-        // Le DataInitializer crÃ©e admin@soprahr.com au dÃ©marrage
+        // Le DataInitializer crée admin@soprahr.com au démarrage
         String email = "admin@soprahr.com";
 
         var req = PasswordResetRequest.builder().email(email).build();
@@ -48,7 +48,7 @@ class PasswordResetIntegrationTest {
                 .getContentAsString();
 
         JsonNode json = objectMapper.readTree(raw);
-        // Si l'email existe, on reÃ§oit un token
+        // Si l'email existe, on reçoit un token
         if (json.hasNonNull("token") && !json.get("token").asText().isBlank()) {
             String token = json.get("token").asText();
 
@@ -61,7 +61,7 @@ class PasswordResetIntegrationTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(confirm)))
                     .andExpect(status().isOk())
-                    .andExpect(content().string(containsString("Mot de passe mis Ã  jour")));
+                    .andExpect(content().string(containsString("Mot de passe mis")));
         }
     }
 }

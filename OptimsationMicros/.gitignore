@@ -5,8 +5,11 @@ __pycache__/
 .env
 venv/
 .venv/
+.cache/
 *.egg-info/
 dist/
 build/
 .pytest_cache/
 .mypy_cache/
+.idea/
+.vscode/

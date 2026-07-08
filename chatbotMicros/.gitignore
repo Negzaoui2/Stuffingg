@@ -1,11 +1,14 @@
-@"
 venv/
+.venv/
 __pycache__/
 *.pyc
-.env
+*.py[cod]
+.cache/
+.pytest_cache/
+.mypy_cache/
 *.egg-info/
-dist/	
+dist/
 build/
 .idea/
 .vscode/
-"@ | Out-File -Encoding UTF8 .gitignore
+.env

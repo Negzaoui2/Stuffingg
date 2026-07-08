@@ -1,0 +1,26 @@
+# === Python ===
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.py[cod]
+*$py.class
+.cache/
+.pytest_cache/
+.mypy_cache/
+*.egg-info/
+
+# === Java / Maven ===
+target/
+
+# === Node / Angular ===
+node_modules/
+dist/
+.angular/
+
+# === IDE ===
+.idea/
+.vscode/
+
+# === Env ===
+.env
