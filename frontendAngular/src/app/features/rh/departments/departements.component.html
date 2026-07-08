@@ -1,0 +1,306 @@
+<!-- ===== TOPBAR ===== -->
+<header class="rh-topbar">
+  <div class="topbar-breadcrumb">
+    <span>StuffingAdmin</span>
+    <span class="sep">/</span>
+    <span class="current">Départements</span>
+  </div>
+  <div class="topbar-spacer"></div>
+  <div class="topbar-actions">
+    <app-notification-bell></app-notification-bell>
+    <button class="topbar-btn" title="Actualiser" (click)="load()">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<!-- ===== MAIN CONTENT ===== -->
+<main class="rh-content">
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-title-block">
+      <h1>Gestion des départements</h1>
+      <p class="page-subtitle">{{ departements.length }} département(s) au total</p>
+    </div>
+    <button class="btn-primary" (click)="openCreateForm()">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+      </svg>
+      Ajouter un département
+    </button>
+  </div>
+
+  <!-- Stats Row -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon total">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5"/>
+        </svg>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value">{{ departements.length }}</div>
+        <div class="stat-label">Départements</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon approved">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value">{{ totalEmployees }}</div>
+        <div class="stat-label">Collaborateurs rattachés</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon neutral">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value">{{ filteredDepartements.length }}</div>
+        <div class="stat-label">Affichés</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toolbar: Search -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <svg class="search-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+      </svg>
+      <input
+        class="search-input"
+        type="text"
+        placeholder="Rechercher un département…"
+        [(ngModel)]="searchQuery"
+      />
+      <button *ngIf="searchQuery" class="search-clear" (click)="searchQuery=''">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Success alert -->
+  <div class="alert-success" *ngIf="successMessage">
+    <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20">
+      <path d="M10 0a10 10 0 100 20 10 10 0 000-20zm-1 14l-4-4 1.41-1.41L9 11.17l5.59-5.59L16 7l-7 7z"/>
+    </svg>
+    {{ successMessage }}
+  </div>
+
+  <!-- Error alert -->
+  <div class="alert-error" *ngIf="errorMessage">
+    <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20">
+      <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm1 15H9v-2h2v2zm0-4H9V5h2v6z"/>
+    </svg>
+    {{ errorMessage }}
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-spinner" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Chargement des départements...</p>
+  </div>
+
+  <!-- Empty state -->
+  <div class="empty-state" *ngIf="!isLoading && !errorMessage && departements.length === 0">
+    <svg width="56" height="56" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5"/>
+    </svg>
+    <h3>Aucun département</h3>
+    <p>Commencez par créer votre premier département.</p>
+  </div>
+
+  <!-- Empty search result -->
+  <div class="empty-state" *ngIf="!isLoading && !errorMessage && departements.length > 0 && filteredDepartements.length === 0">
+    <svg width="56" height="56" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+    </svg>
+    <h3>Aucun résultat</h3>
+    <p>Aucun département ne correspond à votre recherche.</p>
+  </div>
+
+  <!-- Departments Table -->
+  <div class="table-wrap" *ngIf="!isLoading && filteredDepartements.length > 0">
+    <table class="dep-table">
+      <thead>
+        <tr>
+          <th>Département</th>
+          <th>Collaborateurs</th>
+          <th class="th-actions">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let dep of filteredDepartements; trackBy: trackByDepId" class="table-row" (click)="openDepartement(dep)">
+          <td class="td-dep">
+            <div class="dep-avatar">{{ getInitials(dep.name) }}</div>
+            <span class="dep-name">{{ dep.name }}</span>
+          </td>
+          <td>
+            <span class="count-badge" [class.empty]="dep.employeeCount === 0">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+              {{ dep.employeeCount }} collaborateur(s)
+            </span>
+          </td>
+          <td class="td-actions">
+            <button class="btn-action btn-detail" title="Modifier" (click)="openEditForm(dep, $event)">
+              <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+              </svg>
+              Modifier
+            </button>
+            <button
+              class="btn-action btn-delete"
+              [title]="dep.employeeCount > 0 ? 'Impossible de supprimer : collaborateurs rattachés' : 'Supprimer'"
+              [disabled]="dep.employeeCount > 0 || deletingId === dep.id"
+              (click)="confirmDelete(dep, $event)"
+            >
+              <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+              </svg>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</main>
+
+<!-- ===== CREATE / EDIT FORM MODAL ===== -->
+<div class="modal-overlay" *ngIf="showForm" (click)="closeForm()">
+  <div class="modal-card form-card" (click)="$event.stopPropagation()">
+    <div class="form-header">
+      <h3 class="modal-title">{{ editingDepartement ? 'Modifier le département' : 'Nouveau département' }}</h3>
+      <button class="panel-close" (click)="closeForm()">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <form (ngSubmit)="submitForm()" #depForm="ngForm">
+      <div class="form-group">
+        <label class="form-label" for="depName">Nom du département <span class="required">*</span></label>
+        <input
+          id="depName"
+          name="depName"
+          class="form-input"
+          type="text"
+          placeholder="Ex : Développement, Marketing…"
+          [(ngModel)]="formName"
+          required
+          autocomplete="off"
+        />
+        <p class="field-error" *ngIf="formError">{{ formError }}</p>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-modal-cancel" (click)="closeForm()" [disabled]="formSubmitting">
+          Annuler
+        </button>
+        <button type="submit" class="btn-modal-save" [disabled]="formSubmitting || !formName.trim()">
+          {{ formSubmitting ? 'Enregistrement…' : (editingDepartement ? 'Enregistrer' : 'Créer') }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== DELETE CONFIRMATION MODAL ===== -->
+<div class="modal-overlay" *ngIf="departementToDelete" (click)="cancelDelete()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-icon">
+      <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+      </svg>
+    </div>
+    <h3 class="modal-title">Supprimer le département ?</h3>
+    <p class="modal-body">
+      Vous êtes sur le point de supprimer
+      <strong>{{ departementToDelete.name }}</strong>.
+      Cette action est irréversible.
+    </p>
+    <p class="field-error center" *ngIf="deleteError">{{ deleteError }}</p>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" (click)="cancelDelete()" [disabled]="deletingId !== null">Annuler</button>
+      <button class="btn-modal-confirm" (click)="doDelete()" [disabled]="deletingId !== null">
+        {{ deletingId !== null ? 'Suppression…' : 'Supprimer' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DETAIL PANEL : COLLABORATEURS DU DÉPARTEMENT ===== -->
+<div class="detail-overlay" *ngIf="isPanelOpen" (click)="closePanel()"></div>
+<aside class="detail-panel" [class.open]="isPanelOpen">
+
+  <div class="panel-header">
+    <h2 class="panel-title">Collaborateurs du département</h2>
+    <button class="panel-close" (click)="closePanel()">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="panel-body" *ngIf="selectedDepartement">
+
+    <!-- Header département -->
+    <div class="profile-header">
+      <div class="dep-avatar lg">{{ getInitials(selectedDepartement.name) }}</div>
+      <div class="profile-info">
+        <h3>{{ selectedDepartement.name }}</h3>
+        <span class="count-badge" [class.empty]="selectedDepartement.employeeCount === 0">
+          {{ selectedDepartement.employeeCount }} collaborateur(s)
+        </span>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div class="detail-loading" *ngIf="panelLoading">
+      <div class="spinner"></div>
+    </div>
+
+    <!-- Error -->
+    <div class="alert-error" *ngIf="!panelLoading && panelError">
+      <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20">
+        <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm1 15H9v-2h2v2zm0-4H9V5h2v6z"/>
+      </svg>
+      {{ panelError }}
+    </div>
+
+    <!-- Liste des collaborateurs -->
+    <div class="detail-section" *ngIf="!panelLoading && !panelError">
+      <h4 class="section-title">Membres</h4>
+
+      <div class="collab-list" *ngIf="panelCollaborators.length > 0">
+        <div class="collab-item" *ngFor="let u of panelCollaborators">
+          <div class="collab-avatar" [class.inactive]="!u.isActive">{{ getUserInitials(u) }}</div>
+          <div class="collab-info">
+            <span class="collab-name">{{ u.firstName }} {{ u.lastName }}</span>
+            <span class="collab-email">{{ u.email }}</span>
+          </div>
+          <span class="role-badge">{{ getRoleLabel(u.role) }}</span>
+        </div>
+      </div>
+
+      <p class="empty-info" *ngIf="panelCollaborators.length === 0">
+        Aucun collaborateur rattaché à ce département.
+      </p>
+    </div>
+
+  </div>
+</aside>

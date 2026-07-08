@@ -1,0 +1,76 @@
+<div class="page">
+  <header class="page-header">
+    <h1>📅 Mon Planning</h1>
+    <p class="page-sub">Affectations et congés sur le calendrier</p>
+  </header>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="toolbar-nav">
+      <button class="nav-btn" (click)="prev()">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+      </button>
+      <button class="nav-btn today-btn" (click)="today()">Aujourd'hui</button>
+      <button class="nav-btn" (click)="next()">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+      </button>
+      <span class="toolbar-title">{{ currentTitle }}</span>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <div class="legend-item"><span class="legend-bar" style="background:#3B82F6"></span> Affectation</div>
+    <div class="legend-item"><span class="legend-bar" style="background:#10B981"></span> Congé approuvé</div>
+    <div class="legend-item"><span class="legend-bar" style="background:#F59E0B"></span> Congé en attente</div>
+    <div class="legend-item"><span class="legend-bar" style="background:#EF4444"></span> Congé refusé</div>
+  </div>
+
+  @if (loading) {
+    <div class="loading"><div class="spinner"></div><p>Chargement…</p></div>
+  }
+  @if (error && !loading) {
+    <div class="empty"><p>Impossible de charger le planning</p><button class="retry-btn" (click)="loadEvents()">Réessayer</button></div>
+  }
+  @if (!loading && !error) {
+    <div class="calendar-wrap">
+      <full-calendar #calendar [options]="calendarOptions"></full-calendar>
+    </div>
+  }
+
+  <!-- Modal -->
+  @if (showModal && selectedEvent) {
+    <div class="modal-overlay" (click)="closeModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>Détails</h2>
+          <button class="modal-close" (click)="closeModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <h3 class="ev-title">{{ selectedEvent.title }}</h3>
+          <div class="detail-row"><span class="dlabel">Type</span><span class="dvalue badge" [class.badge-assign]="selectedEvent.props.type==='ASSIGNMENT'" [class.badge-leave]="selectedEvent.props.type==='LEAVE'">{{ getTypeLabel(selectedEvent.props.type) }}</span></div>
+          @if (selectedEvent.props.projectName) {
+            <div class="detail-row"><span class="dlabel">Projet</span><span class="dvalue">{{ selectedEvent.props.projectName }}</span></div>
+          }
+          @if (selectedEvent.props.clientName) {
+            <div class="detail-row"><span class="dlabel">Client</span><span class="dvalue">{{ selectedEvent.props.clientName }}</span></div>
+          }
+          @if (selectedEvent.props.roleName) {
+            <div class="detail-row"><span class="dlabel">Rôle</span><span class="dvalue">{{ selectedEvent.props.roleName }}</span></div>
+          }
+          @if (selectedEvent.props.leaveType) {
+            <div class="detail-row"><span class="dlabel">Type congé</span><span class="dvalue">{{ selectedEvent.props.leaveType }}</span></div>
+          }
+          <div class="detail-row"><span class="dlabel">Début</span><span class="dvalue">{{ selectedEvent.start }}</span></div>
+          <div class="detail-row"><span class="dlabel">Fin</span><span class="dvalue">{{ selectedEvent.end }}</span></div>
+          @if (selectedEvent.props.status) {
+            <div class="detail-row"><span class="dlabel">Statut</span><span class="dvalue">{{ getStatusLabel(selectedEvent.props.status) }}</span></div>
+          }
+          @if (selectedEvent.props.reason) {
+            <div class="detail-row"><span class="dlabel">Motif</span><span class="dvalue">{{ selectedEvent.props.reason }}</span></div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,48 @@
+# Build artifacts
+target/
+build/
+out/
+*.jar
+*.war
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.settings/
+.classpath
+.project
+
+# Git / VCS
+.git/
+.gitignore
+.gitattributes
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs / temp
+*.log
+logs/
+tmp/
+
+# Docs & CI (pas besoin dans l'image)
+*.md
+!README.md
+.github/
+
+# Docker meta
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# Keycloak dev assets
+keycloak/
+
+# Secrets locaux
+.env
+.env.*
+!.env.example

@@ -1,0 +1,92 @@
+<!-- Floating bubble button -->
+<button class="chat-fab" (click)="toggle()" [class.open]="isOpen" title="Assistant IA">
+  <span class="fab-icon" *ngIf="!isOpen">
+    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+    </svg>
+  </span>
+  <span class="fab-icon" *ngIf="isOpen">
+    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+    </svg>
+  </span>
+</button>
+
+<!-- Chat panel -->
+<div class="chat-panel" *ngIf="isOpen">
+  <!-- Header -->
+  <div class="panel-header">
+    <div class="header-left">
+      <div class="bot-avatar">🤖</div>
+      <div class="header-info">
+        <span class="header-title">Assistant IA</span>
+        <span class="header-status">● En ligne</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-icon" (click)="clearChat()" title="Nouvelle conversation">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+        </svg>
+      </button>
+      <button class="btn-icon" (click)="close()" title="Fermer">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div class="panel-messages" #messagesContainer>
+    <!-- Welcome -->
+    <div class="welcome" *ngIf="chat.messages().length === 0">
+      <div class="welcome-emoji">💬</div>
+      <p class="welcome-text">Comment puis-je vous aider ?</p>
+      <div class="suggestions">
+        <button class="suggestion" *ngFor="let s of suggestions" (click)="sendSuggestion(s)">{{ s }}</button>
+      </div>
+    </div>
+
+    <!-- Messages list -->
+    <ng-container *ngFor="let msg of chat.messages(); let i = index">
+      <div class="msg-row" [ngClass]="msg.role === 'user' ? 'msg-user' : 'msg-bot'">
+        <div class="msg-avatar" *ngIf="msg.role === 'assistant'">🤖</div>
+        <div class="msg-bubble" [ngClass]="msg.role === 'user' ? 'bubble-user' : 'bubble-bot'">
+          <div class="msg-content" [innerHTML]="msg.content"></div>
+          <a *ngIf="msg.downloadUrl" class="btn-download" [href]="'http://localhost:8000' + msg.downloadUrl" target="_blank" rel="noopener">
+            <span class="download-icon">📥</span> Télécharger le fichier
+          </a>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- Typing indicator -->
+    <div class="msg-row msg-bot" *ngIf="chat.loading()">
+      <div class="msg-avatar">🤖</div>
+      <div class="msg-bubble bubble-bot">
+        <div class="typing">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Input -->
+  <div class="panel-input">
+    <input
+      type="text"
+      class="chat-input"
+      placeholder="Votre question..."
+      [ngModel]="userInput()"
+      (ngModelChange)="userInput.set($event)"
+      (keydown)="onKeyDown($event)"
+      [disabled]="chat.loading()"
+    />
+    <button class="btn-send" (click)="send()" [disabled]="!userInput().trim() || chat.loading()">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 19V5m0 0l-7 7m7-7l7 7"/>
+      </svg>
+    </button>
+  </div>
+</div>

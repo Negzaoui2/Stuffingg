@@ -1,0 +1,208 @@
+<div class="register-container">
+  <div class="register-card card-sopra">
+    
+    <!-- Header -->
+    <div class="register-header">
+      <div class="logo-container">
+        <svg width="50" height="50" viewBox="0 0 50 50" fill="none">
+          <rect width="50" height="50" rx="10" fill="url(#gradient)" />
+          <path d="M15 25L22 32L35 18" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          <defs>
+            <linearGradient id="gradient" x1="0" y1="0" x2="50" y2="50">
+              <stop offset="0%" stop-color="#5B2C91" />
+              <stop offset="100%" stop-color="#3D1A5C" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <h1>Demande d'accès</h1>
+      <p class="subtitle">Étape {{ currentStep }} sur {{ totalSteps }}</p>
+      <div class="accent-bar"></div>
+    </div>
+
+    <!-- Barre de progression -->
+    <div class="progress-bar-container">
+      <div class="progress-bar" [style.width.%]="progressPercentage"></div>
+    </div>
+
+    <!-- Stepper indicateur -->
+    <div class="stepper-indicator">
+      <div 
+        class="step-item" 
+        [class.active]="currentStep === 1"
+        [class.completed]="currentStep > 1"
+        (click)="goToStep(1)"
+      >
+        <div class="step-circle">
+          <span *ngIf="currentStep === 1">1</span>
+          <svg *ngIf="currentStep > 1" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+          </svg>
+        </div>
+      </div>
+     
+
+    <!-- Messages -->
+    <div class="alert-success" *ngIf="successMessage">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm-2 15l-5-5 1.41-1.41L8 12.17l7.59-7.59L17 6l-9 9z"/>
+      </svg>
+      {{ successMessage }}
+    </div>
+
+    <div class="alert-error" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Formulaire -->
+    <form [formGroup]="requestForm" (ngSubmit)="onSubmit()">
+      
+      <!-- ========== ÉTAPE 1 : Informations personnelles ========== -->
+      <div class="step-content" *ngIf="currentStep === 1">
+        <h2 class="step-title">Informations personnelles</h2>
+
+        <div class="form-group">
+          <label for="firstName">Prénom <span class="required">*</span></label>
+          <input
+            id="firstName"
+            type="text"
+            formControlName="firstName"
+            class="input-sopra"
+            placeholder="Jean"
+            [class.input-error]="firstName?.invalid && firstName?.touched"
+          />
+          <div class="error-message" *ngIf="firstName?.invalid && firstName?.touched">
+            <span *ngIf="firstName?.errors?.['required']">Le prénom est obligatoire</span>
+            <span *ngIf="firstName?.errors?.['minlength']">Minimum 2 caractères</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="lastName">Nom <span class="required">*</span></label>
+          <input
+            id="lastName"
+            type="text"
+            formControlName="lastName"
+            class="input-sopra"
+            placeholder="Dupont"
+            [class.input-error]="lastName?.invalid && lastName?.touched"
+          />
+          <div class="error-message" *ngIf="lastName?.invalid && lastName?.touched">
+            <span *ngIf="lastName?.errors?.['required']">Le nom est obligatoire</span>
+            <span *ngIf="lastName?.errors?.['minlength']">Minimum 2 caractères</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email personnel <span class="required">*</span></label>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            class="input-sopra"
+            placeholder="jean.dupont@gmail.com"
+            [class.input-error]="email?.invalid && email?.touched"
+          />
+          <div class="error-message" *ngIf="email?.invalid && email?.touched">
+            <span *ngIf="email?.errors?.['required']">L'email est obligatoire</span>
+            <span *ngIf="email?.errors?.['email']">Email invalide</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Téléphone</label>
+          <input
+            id="phone"
+            type="tel"
+            formControlName="phone"
+            class="input-sopra"
+            placeholder="+33 6 12 34 56 78"
+          />
+        </div>
+      </div>
+
+      <!-- ========== ÉTAPE 2 : Informations professionnelles + Message ========== -->
+      <div class="step-content" *ngIf="currentStep === 2">
+        <h2 class="step-title">Informations professionnelles</h2>
+
+        <div class="form-group">
+          <label for="company">Entreprise <span class="required">*</span></label>
+          <input
+            id="company"
+            type="text"
+            formControlName="company"
+            class="input-sopra"
+            placeholder="Sopra Steria"
+            [class.input-error]="company?.invalid && company?.touched"
+          />
+          <div class="error-message" *ngIf="company?.invalid && company?.touched">
+            <span *ngIf="company?.errors?.['required']">L'entreprise est obligatoire</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="jobTitle">Poste <span class="required">*</span></label>
+          <input
+            id="jobTitle"
+            type="text"
+            formControlName="jobTitle"
+            class="input-sopra"
+            placeholder="Chef de projet"
+            [class.input-error]="jobTitle?.invalid && jobTitle?.touched"
+          />
+          <div class="error-message" *ngIf="jobTitle?.invalid && jobTitle?.touched">
+            <span *ngIf="jobTitle?.errors?.['required']">Le poste est obligatoire</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="message">Message (optionnel)</label>
+          <textarea
+            id="message"
+            formControlName="message"
+            class="input-sopra textarea-sopra"
+            placeholder="Informations complémentaires..."
+            rows="4"
+          ></textarea>
+          <small class="form-hint">Maximum 4000 caractères</small>
+        </div>
+      </div>
+
+      <!-- Boutons de navigation -->
+      <div class="button-group">
+        <button
+          type="button"
+          class="btn-sopra-secondary"
+          (click)="previousStep()"
+          *ngIf="currentStep > 1"
+        >
+          ← Précédent
+        </button>
+
+        <button
+          type="button"
+          class="btn-sopra-primary"
+          (click)="nextStep()"
+          *ngIf="currentStep < totalSteps"
+        >
+          Suivant →
+        </button>
+
+        <button
+          type="submit"
+          class="btn-sopra-primary btn-submit"
+          [disabled]="isLoading"
+          *ngIf="currentStep === totalSteps"
+        >
+          <span *ngIf="!isLoading">Envoyer la demande</span>
+          <span *ngIf="isLoading" class="spinner"></span>
+        </button>
+      </div>
+    </form>
+
+    <div class="signin-link">
+      Vous avez déjà un compte ?
+      <a routerLink="/auth/login">Se connecter</a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,132 @@
+<div class="page">
+  <header class="page-header">
+    <div>
+      <h1>Mes Congés</h1>
+      <p class="page-sub">Gérez vos demandes de congé et absences</p>
+    </div>
+    <button class="btn-primary" (click)="openForm()">+ Nouvelle demande</button>
+  </header>
+
+  <!-- Balance cards -->
+  @if (balance) {
+    <div class="balance-row">
+      <div class="balance-card">
+        <div class="bal-value">{{ balance.paidLeaveRemaining }}<span class="bal-total">/{{ balance.paidLeaveTotal }}</span></div>
+        <div class="bal-label">Congés payés</div>
+        <div class="bal-bar"><div class="bal-fill green" [style.width.%]="balance.paidLeaveTotal > 0 ? (balance.paidLeaveRemaining / balance.paidLeaveTotal * 100) : 0"></div></div>
+      </div>
+      <div class="balance-card">
+        <div class="bal-value">{{ balance.rttRemaining }}<span class="bal-total">/{{ balance.rttTotal }}</span></div>
+        <div class="bal-label">RTT</div>
+        <div class="bal-bar"><div class="bal-fill blue" [style.width.%]="balance.rttTotal > 0 ? (balance.rttRemaining / balance.rttTotal * 100) : 0"></div></div>
+      </div>
+      <div class="balance-card">
+        <div class="bal-value">{{ balance.sickLeaveTaken }}</div>
+        <div class="bal-label">Jours maladie pris</div>
+      </div>
+    </div>
+  }
+
+  <!-- Filters -->
+  <div class="toolbar">
+    <select class="filter-select" [(ngModel)]="statusFilter" (ngModelChange)="onFilterChange()">
+      <option value="">Tous les statuts</option>
+      <option value="PENDING">En attente</option>
+      <option value="APPROVED">Approuvé</option>
+      <option value="REJECTED">Refusé</option>
+    </select>
+    <span class="result-count">{{ total }} demande(s)</span>
+  </div>
+
+  @if (isLoading) {
+    <div class="loading"><div class="spinner"></div></div>
+  }
+
+  @if (!isLoading && leaves.length === 0) {
+    <div class="empty">Aucune demande de congé</div>
+  }
+
+  @if (!isLoading && leaves.length > 0) {
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr><th>Type</th><th>Début</th><th>Fin</th><th>Jours</th><th>Motif</th><th>Statut</th><th>Validé par</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          @for (l of leaves; track l.id) {
+            <tr>
+              <td class="col-type">{{ getTypeLabel(l.type) }}</td>
+              <td>{{ l.startDate }}</td>
+              <td>{{ l.endDate }}</td>
+              <td>{{ l.days }}</td>
+              <td class="col-reason">{{ l.reason || '—' }}</td>
+              <td><span class="badge" [ngClass]="getStatusClass(l.status)">{{ getStatusLabel(l.status) }}</span></td>
+              <td>{{ l.reviewedBy || '—' }}</td>
+              <td>
+                @if (l.status === 'PENDING') {
+                  <button class="btn-cancel" [disabled]="cancellingId === l.id" (click)="cancelLeave(l.id)">
+                    {{ cancellingId === l.id ? '...' : 'Annuler' }}
+                  </button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (totalPages > 1) {
+      <div class="pagination">
+        <button class="pg-btn" [disabled]="page === 0" (click)="prevPage()">← Précédent</button>
+        <span class="pg-info">{{ page + 1 }} / {{ totalPages }}</span>
+        <button class="pg-btn" [disabled]="page + 1 >= totalPages" (click)="nextPage()">Suivant →</button>
+      </div>
+    }
+  }
+
+  <!-- New Leave Form Modal -->
+  @if (showForm) {
+    <div class="modal-overlay" (click)="closeForm()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>Nouvelle demande de congé</h2>
+          <button class="modal-close" (click)="closeForm()">✕</button>
+        </div>
+        <div class="modal-body">
+          @if (formError) {
+            <div class="form-error">{{ formError }}</div>
+          }
+          <div class="form-group">
+            <label>Type de congé</label>
+            <select [(ngModel)]="formData.type">
+              <option value="PAID_LEAVE">Congé payé</option>
+              <option value="RTT">RTT</option>
+              <option value="SICK_LEAVE">Congé maladie</option>
+              <option value="UNPAID_LEAVE">Sans solde</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Date de début</label>
+              <input type="date" [(ngModel)]="formData.startDate">
+            </div>
+            <div class="form-group">
+              <label>Date de fin</label>
+              <input type="date" [(ngModel)]="formData.endDate">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Motif (optionnel)</label>
+            <textarea [(ngModel)]="formData.reason" rows="3" placeholder="Raison de la demande…"></textarea>
+          </div>
+          <div class="form-actions">
+            <button class="btn-secondary" (click)="closeForm()">Annuler</button>
+            <button class="btn-primary" [disabled]="formSubmitting" (click)="submitLeave()">
+              {{ formSubmitting ? 'Envoi…' : 'Soumettre' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,151 @@
+﻿{
+  "realm": "stuffing",
+  "enabled": true,
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "editUsernameAllowed": false,
+  "bruteForceProtected": true,
+  "roles": {
+    "realm": [
+      { "name": "ADMIN", "description": "Administrateur Stuffing" },
+      { "name": "DELIVERY_MANAGER", "description": "Delivery Manager / Chef de projet" },
+      { "name": "COLLABORATEUR", "description": "Collaborateur / Employe" }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "stuffing-backend",
+      "name": "Stuffing Backend API",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "stuffing-backend-secret",
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "redirectUris": ["http://localhost:8089/*"],
+      "webOrigins": ["http://localhost:8089"],
+      "defaultClientScopes": ["openid", "email", "profile", "roles"]
+    },
+    {
+      "clientId": "stuffing-frontend",
+      "name": "Stuffing Angular Frontend",
+      "enabled": true,
+      "publicClient": true,
+      "directAccessGrantsEnabled": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "protocol": "openid-connect",
+      "redirectUris": ["http://localhost:4200/*"],
+      "webOrigins": ["http://localhost:4200"],
+      "postLogoutRedirectUris": ["http://localhost:4200/*"],
+      "defaultClientScopes": ["openid", "email", "profile", "roles"]
+    }
+  ],
+  "users": [
+    {
+      "username": "admin@soprahr.com",
+      "email": "admin@soprahr.com",
+      "firstName": "Admin",
+      "lastName": "Stuffing",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "Admin1234!", "temporary": false }],
+      "realmRoles": ["ADMIN"]
+    },
+    {
+      "username": "karim.benali@soprahr.com",
+      "email": "karim.benali@soprahr.com",
+      "firstName": "Karim",
+      "lastName": "Benali",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "Manager1234!", "temporary": false }],
+      "realmRoles": ["DELIVERY_MANAGER"]
+    },
+    {
+      "username": "yassine.elamrani@soprahr.com",
+      "email": "yassine.elamrani@soprahr.com",
+      "firstName": "Yassine",
+      "lastName": "El Amrani",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "Collab1234!", "temporary": false }],
+      "realmRoles": ["COLLABORATEUR"]
+    },
+    {
+      "username": "fatima.zahra@soprahr.com",
+      "email": "fatima.zahra@soprahr.com",
+      "firstName": "Fatima",
+      "lastName": "Zahra",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "Collab1234!", "temporary": false }],
+      "realmRoles": ["COLLABORATEUR"]
+    },
+    {
+      "username": "omar.tazi@soprahr.com",
+      "email": "omar.tazi@soprahr.com",
+      "firstName": "Omar",
+      "lastName": "Tazi",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "Collab1234!", "temporary": false }],
+      "realmRoles": ["COLLABORATEUR"]
+    },
+    {
+      "username": "sara.benmoussa@soprahr.com",
+      "email": "sara.benmoussa@soprahr.com",
+      "firstName": "Sara",
+      "lastName": "Benmoussa",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "Collab1234!", "temporary": false }],
+      "realmRoles": ["COLLABORATEUR"]
+    },
+    {
+      "username": "amine.cherkaoui@soprahr.com",
+      "email": "amine.cherkaoui@soprahr.com",
+      "firstName": "Amine",
+      "lastName": "Cherkaoui",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "Collab1234!", "temporary": false }],
+      "realmRoles": ["COLLABORATEUR"]
+    },
+    {
+      "username": "nadia.idrissi@soprahr.com",
+      "email": "nadia.idrissi@soprahr.com",
+      "firstName": "Nadia",
+      "lastName": "Idrissi",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "Collab1234!", "temporary": false }],
+      "realmRoles": ["COLLABORATEUR"]
+    },
+    {
+      "username": "mehdi.alaoui@soprahr.com",
+      "email": "mehdi.alaoui@soprahr.com",
+      "firstName": "Mehdi",
+      "lastName": "Alaoui",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "Collab1234!", "temporary": false }],
+      "realmRoles": ["COLLABORATEUR"]
+    },
+    {
+      "username": "leila.fassi@soprahr.com",
+      "email": "leila.fassi@soprahr.com",
+      "firstName": "Leila",
+      "lastName": "Fassi",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "Collab1234!", "temporary": false }],
+      "realmRoles": ["COLLABORATEUR"]
+    }
+  ]
+}
+

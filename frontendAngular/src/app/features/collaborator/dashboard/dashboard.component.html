@@ -1,0 +1,130 @@
+<div class="page">
+  <!-- Loading -->
+  @if (isLoading) {
+    <div class="loading"><div class="spinner"></div><p>Chargement…</p></div>
+  }
+
+  @if (!isLoading && dashboard) {
+    <!-- Welcome -->
+    <div class="welcome-card">
+      <div class="welcome-text">
+        <h1>Bonjour, {{ dashboard.fullName }} 👋</h1>
+        <p>{{ dashboard.department ? dashboard.department + ' · ' : '' }}Bienvenue dans votre espace</p>
+      </div>
+      <button class="btn-refresh" (click)="load()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="kpi-row">
+      <!-- Mission actuelle -->
+      <div class="kpi-card mission-card">
+        <div class="kpi-header">
+          <div class="kpi-icon blue">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+          </div>
+          <span class="kpi-label">Mission actuelle</span>
+        </div>
+        @if (dashboard.currentAssignment) {
+          <div class="mission-name">{{ dashboard.currentAssignment.projectName }}</div>
+          <div class="mission-meta">{{ dashboard.currentAssignment.clientName }} · {{ dashboard.currentAssignment.roleName }}</div>
+          <div class="progress-wrap">
+            <div class="progress-bar"><div class="progress-fill" [style.width.%]="dashboard.currentAssignment.progressPercent"></div></div>
+            <div class="progress-info">
+              <span>{{ dashboard.currentAssignment.progressPercent }}%</span>
+              <span class="days-remaining">{{ dashboard.currentAssignment.daysRemaining }}j restants</span>
+            </div>
+          </div>
+        } @else {
+          <div class="empty-mission">Aucune mission en cours</div>
+        }
+      </div>
+
+      <!-- Solde congés -->
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <div class="kpi-icon green">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+          </div>
+          <span class="kpi-label">Solde congés</span>
+        </div>
+        <div class="leave-grid">
+          <div class="leave-item">
+            <div class="leave-value">{{ dashboard.leaveBalance.paidLeaveRemaining }}<span class="leave-total">/{{ dashboard.leaveBalance.paidLeaveTotal }}</span></div>
+            <div class="leave-label">Congés payés</div>
+          </div>
+          <div class="leave-item">
+            <div class="leave-value">{{ dashboard.leaveBalance.rttRemaining }}<span class="leave-total">/{{ dashboard.leaveBalance.rttTotal }}</span></div>
+            <div class="leave-label">RTT</div>
+          </div>
+          <div class="leave-item">
+            <div class="leave-value">{{ dashboard.leaveBalance.sickLeaveTaken }}</div>
+            <div class="leave-label">Maladie</div>
+          </div>
+        </div>
+        <a routerLink="/collaborator/leaves" class="card-link">Voir mes congés →</a>
+      </div>
+
+      <!-- Compétences -->
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <div class="kpi-icon purple">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+            </svg>
+          </div>
+          <span class="kpi-label">Compétences</span>
+        </div>
+        <div class="skill-count">{{ dashboard.skillCount }}</div>
+        <div class="skill-sub">compétences enregistrées</div>
+        <a routerLink="/collaborator/profile" class="card-link">Gérer mes compétences →</a>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <!-- Prochains événements -->
+      <div class="panel">
+        <div class="panel-header"><h2>Prochains événements</h2></div>
+        <div class="panel-body">
+          @if (dashboard.upcomingEvents.length === 0) {
+            <div class="empty-list">Aucun événement à venir</div>
+          }
+          @for (ev of dashboard.upcomingEvents; track ev.date + ev.label) {
+            <div class="event-row">
+              <span class="event-icon">{{ getEventIcon(ev.type) }}</span>
+              <div class="event-info">
+                <span class="event-label">{{ ev.label }}</span>
+                <span class="event-date">{{ ev.date }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Notifications récentes -->
+      <div class="panel">
+        <div class="panel-header"><h2>Notifications récentes</h2></div>
+        <div class="panel-body">
+          @if (dashboard.recentNotifications.length === 0) {
+            <div class="empty-list">Aucune notification</div>
+          }
+          @for (n of dashboard.recentNotifications; track n.date + n.message) {
+            <div class="notif-row" [ngClass]="getNotifClass(n.type)">
+              <div class="notif-dot"></div>
+              <div class="notif-info">
+                <span class="notif-msg">{{ n.message }}</span>
+                <span class="notif-date">{{ n.date }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,403 @@
+/* ============================================
+   CONTAINER PRINCIPAL
+   ============================================ */
+.register-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding:  20px;
+  background: linear-gradient(135deg, #5B2C91 0%, #8B5FBF 50%, #3D1A5C 100%);
+  position: relative;
+  overflow-y : auto;
+}
+
+/* Effet de fond animé */
+.register-container::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: backgroundMove 20s linear infinite;
+}
+
+@keyframes backgroundMove {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(50px, 50px);
+  }
+}
+
+/* ============================================
+   CARD
+   ============================================ */
+.register-card {
+  width: 100%;
+  max-width: 600px;
+  max-height: 95vh; /* ← Limite à 95% de la hauteur de l'écran */
+  background: white;
+  overflow-y: auto; /* ← Permet le scroll si le contenu dépasse */
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  padding: 32px;
+  position: relative;
+  z-index: 1;
+  animation: slideUp 0.6s ease;
+   margin: 20px 0; 
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+.register-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.logo-container {
+  margin-bottom: 20px;
+  display: inline-block;
+  animation: logoFloat 3s ease-in-out infinite;
+}
+
+@keyframes logoFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.register-header h1 {
+  font-size: 32px;
+  color: var(--sopra-primary);
+  margin-bottom: 8px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.subtitle {
+  color: var(--sopra-text-light);
+  font-size: 14px;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.accent-bar {
+  width: 80px;
+  height: 3px; /* Réduit de 4px à 3px */
+  background: linear-gradient(90deg, var(--sopra-accent), var(--sopra-primary));
+  margin: 0 auto;
+  border-radius: 2px;
+}
+
+/* ============================================
+   FORM
+   ============================================ */
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: 600;
+  color: var(--sopra-text-dark);
+  font-size: 14px;
+  letter-spacing: 0.3px;
+}
+
+.required {
+  color: var(--sopra-error);
+  font-weight: 700;
+}
+
+/* Inputs */
+.input-sopra {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid #E0E0E0;
+  border-radius: 10px;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  background: #FAFAFA;
+}
+
+.input-sopra:focus {
+  outline: none;
+  border-color: var(--sopra-primary);
+  background: white;
+  box-shadow: 0 0 0 4px rgba(91, 44, 145, 0.1);
+  transform: translateY(-1px);
+}
+
+.input-sopra::placeholder {
+  color: #999;
+}
+
+/* Textarea */
+.textarea-sopra {
+  resize: vertical;
+  min-height: 100px;
+  font-family: inherit;
+  line-height: 1.6;
+}
+
+.form-hint {
+  display: block;
+  margin-top: 6px;
+  color: var(--sopra-text-light);
+  font-size: 12px;
+  font-style: italic;
+}
+
+/* Input Error */
+.input-error {
+  border-color: var(--sopra-error) !important;
+  background: #FFF5F5 !important;
+  animation: shake 0.3s ease;
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+.error-message {
+  color: var(--sopra-error);
+  font-size: 13px;
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.error-message::before {
+  content: '⚠';
+  font-size: 14px;
+}
+
+/* ============================================
+   ALERTS
+   ============================================ */
+.alert-success {
+  background: linear-gradient(135deg, #D4EDDA 0%, #C3E6CB 100%);
+  border-left: 5px solid var(--sopra-success);
+  color: #155724;
+  padding: 16px;
+  border-radius: 10px;
+  margin-bottom: 24px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
+  animation: slideDown 0.4s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.alert-success svg {
+  flex-shrink: 0;
+}
+
+.alert-error {
+  background: linear-gradient(135deg, #FEE 0%, #FFDDDD 100%);
+  border-left: 5px solid var(--sopra-error);
+  color: var(--sopra-error);
+  padding: 16px;
+  border-radius: 10px;
+  margin-bottom: 24px;
+  font-size: 14px;
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.2);
+  animation: slideDown 0.4s ease;
+}
+
+/* ============================================
+   BUTTON
+   ============================================ */
+.btn-full {
+  width: 100%;
+  font-size: 16px;
+  padding: 16px;
+  margin-top: 12px;
+  border-radius: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+.btn-sopra-primary {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-sopra-primary::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.btn-sopra-primary:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.btn-sopra-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 24px rgba(91, 44, 145, 0.3);
+}
+
+.btn-sopra-primary:active {
+  transform: translateY(-1px);
+}
+
+.btn-sopra-primary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================
+   SIGNIN LINK
+   ============================================ */
+.signin-link {
+  text-align: center;
+  margin-top: 32px;
+  color: var(--sopra-text-light);
+  font-size: 14px;
+  padding-top: 24px;
+  border-top: 1px solid #E0E0E0;
+}
+
+.signin-link a {
+  color: var(--sopra-accent);
+  text-decoration: none;
+  font-weight: 700;
+  margin-left: 6px;
+  transition: all 0.3s;
+  position: relative;
+}
+
+.signin-link a::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--sopra-accent);
+  transition: width 0.3s;
+}
+
+.signin-link a:hover::after {
+  width: 100%;
+}
+
+.signin-link a:hover {
+  color: var(--sopra-accent-hover);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .register-container {
+    padding: 20px 16px;
+  }
+
+  .register-card {
+    padding: 32px 24px;
+    border-radius: 12px;
+  }
+
+  .register-header h1 {
+    font-size: 26px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .btn-full {
+    padding: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .register-card {
+    padding: 24px 20px;
+  }
+
+  .register-header h1 {
+    font-size: 24px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+  }
+
+  .input-sopra {
+    padding: 12px 14px;
+    font-size: 14px;
+  }
+}

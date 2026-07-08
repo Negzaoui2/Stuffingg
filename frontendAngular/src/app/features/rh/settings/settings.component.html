@@ -1,0 +1,161 @@
+<div class="settings-page">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="breadcrumb">
+      <span class="bc-item">Admin</span>
+      <span class="bc-sep">/</span>
+      <span class="bc-item active">Paramètres</span>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="settings-content">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+      <h1 class="page-title">⚙️ Paramètres</h1>
+      <p class="page-subtitle">Configuration générale de la plateforme</p>
+    </div>
+
+    <div class="cards-grid">
+
+      <!-- SECTION 1 : Notifications -->
+      <div class="settings-card">
+        <div class="card-header">
+          <div class="card-icon notif-icon">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+            </svg>
+          </div>
+          <h2 class="card-title">Notifications</h2>
+        </div>
+
+        <div class="card-body">
+          <div class="info-rows">
+            <div class="info-row">
+              <span class="info-label">Notifications In-App</span>
+              <span class="badge badge-success">Activées</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Notifications Email</span>
+              <span class="badge badge-success">Activées</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Expéditeur</span>
+              <span class="info-value">no-reply&#64;sopraHr.com</span>
+            </div>
+          </div>
+
+          <div class="notif-table-wrapper">
+            <table class="notif-table">
+              <thead>
+                <tr>
+                  <th>Événement</th>
+                  <th class="center">In-App</th>
+                  <th class="center">Email</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (row of notificationTypes; track row.event) {
+                  <tr>
+                    <td>{{ row.event }}</td>
+                    <td class="center">
+                      <span class="status-dot" [class.active]="row.inApp" [class.inactive]="!row.inApp"></span>
+                    </td>
+                    <td class="center">
+                      <span class="status-dot" [class.active]="row.email" [class.inactive]="!row.email"></span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 2 : Sécurité -->
+      <div class="settings-card">
+        <div class="card-header">
+          <div class="card-icon security-icon">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+          </div>
+          <h2 class="card-title">Sécurité & Authentification</h2>
+        </div>
+
+        <div class="card-body">
+          <div class="info-rows">
+            <div class="info-row">
+              <span class="info-label">Fournisseur</span>
+              <span class="info-value">Keycloak (OAuth2 / OpenID Connect)</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Realm</span>
+              <span class="info-value mono">stuffing intelligent</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Rôles configurés</span>
+              <span class="roles-list">
+                @for (role of roles; track role) {
+                  <span class="badge badge-role">{{ role }}</span>
+                }
+              </span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Expiration session</span>
+              <span class="info-value">30 minutes</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">URL Keycloak</span>
+              <span class="info-value mono">http://localhost:8180</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 3 : Application -->
+      <div class="settings-card">
+        <div class="card-header">
+          <div class="card-icon app-icon">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+            </svg>
+          </div>
+          <h2 class="card-title">Informations Application</h2>
+        </div>
+
+        <div class="card-body">
+          <div class="info-rows">
+            <div class="info-row">
+              <span class="info-label">Nom</span>
+              <span class="info-value">Stuffing intelligent</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Version</span>
+              <span class="badge badge-version">1.0.0</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Backend</span>
+              <span class="info-value">Spring Boot 3 (Java 21) — Port 8086</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Base de données</span>
+              <span class="info-value">PostgreSQL</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Domaine email professionnel</span>
+              <span class="info-value mono">&#64;soprahr.com</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Frontend</span>
+              <span class="info-value">Angular 19 — Port 4200</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

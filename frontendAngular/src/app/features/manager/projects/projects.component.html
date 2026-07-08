@@ -1,0 +1,418 @@
+<header class="topbar">
+  <div class="topbar-breadcrumb">
+    <span>Stuffing</span>
+    <span class="sep">/</span>
+    <span class="current">Projets / Missions</span>
+  </div>
+  <div class="topbar-spacer"></div>
+  <button class="topbar-btn" title="Actualiser" (click)="load()">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+    </svg>
+  </button>
+</header>
+
+<main class="content">
+
+  <div class="page-header">
+    <div>
+      <h1>Projets / Missions</h1>
+      <p class="page-subtitle">{{ total }} projet(s) au total</p>
+    </div>
+    <button class="btn-primary" (click)="openCreateForm()">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+      </svg>
+      Nouveau projet
+    </button>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast-success" *ngIf="successMessage">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    </svg>
+    {{ successMessage }}
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon blue">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        </svg>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value">{{ total }}</div>
+        <div class="stat-label">Total projets</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon green">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+        </svg>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value">{{ activeCount }}</div>
+        <div class="stat-label">En cours</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon purple">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value">{{ completedCount }}</div>
+        <div class="stat-label">Terminés</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <svg class="search-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+      </svg>
+      <input class="search-input" type="text" placeholder="Rechercher un projet ou client…"
+        [(ngModel)]="searchQuery" (ngModelChange)="onSearchChange()"/>
+      <button *ngIf="searchQuery" class="search-clear" (click)="searchQuery=''; onFilterChange()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <select class="filter-select" [(ngModel)]="statusFilter" (ngModelChange)="onFilterChange()">
+      <option value="">Tous les statuts</option>
+      <option value="ACTIVE">En cours</option>
+      <option value="COMPLETED">Terminé</option>
+      <option value="ON_HOLD">En pause</option>
+      <option value="PLANNED">Planifié</option>
+      <option value="ARCHIVED">Archivés</option>
+    </select>
+  </div>
+
+  <!-- Error -->
+  <div class="alert-error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+  <!-- Loading -->
+  <div class="loading-spinner" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Chargement…</p>
+  </div>
+
+  <!-- Empty -->
+  <div class="empty-state" *ngIf="!isLoading && !errorMessage && projects.length === 0">
+    <svg width="56" height="56" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+    </svg>
+    <h3>Aucun projet</h3>
+    <p>Aucun projet ne correspond à votre recherche.</p>
+  </div>
+
+  <!-- Projects Grid -->
+  <div class="projects-grid" *ngIf="!isLoading && projects.length > 0">
+    <div class="project-card" *ngFor="let p of projects" (click)="openDetail(p)"
+         [ngClass]="getStatusClass(p.status)">
+      <div class="card-stripe"></div>
+      <div class="card-top">
+        <div class="project-meta">
+          <h3>{{ p.name }}</h3>
+          <p class="project-client">{{ p.clientName }}</p>
+        </div>
+        <div class="card-actions">
+          <span class="status-badge" [ngClass]="getStatusClass(p.status)">
+            {{ getStatusLabel(p.status) }}
+          </span>
+          <button *ngIf="p.status !== 'ARCHIVED'" class="btn-icon-small" title="Supprimer" 
+                  (click)="openDetail(p); deleteProject(); $event.stopPropagation()" 
+                  aria-label="Supprimer le projet">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="project-dates">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          <span>{{ p.startDate | date:'MMM yyyy' }}</span>
+          <span *ngIf="p.endDate"> → {{ p.endDate | date:'MMM yyyy' }}</span>
+          <span *ngIf="!p.endDate"> → En cours</span>
+        </div>
+        <div class="project-team-row">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+          <span>{{ p.teamSize }} membre(s)</span>
+        </div>
+        <div class="project-techs" *ngIf="p.technologies && p.technologies.length > 0">
+          <span class="tech-tag" *ngFor="let t of p.technologies.slice(0, 4)">{{ t }}</span>
+          <span class="tech-more" *ngIf="p.technologies.length > 4">+{{ p.technologies.length - 4 }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination" *ngIf="!isLoading && totalPages > 1">
+    <button class="pg-btn" [disabled]="page === 0" (click)="prevPage()">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+      </svg>
+    </button>
+    <span class="pg-info">Page {{ page + 1 }} / {{ totalPages }}</span>
+    <button class="pg-btn" [disabled]="page + 1 >= totalPages" (click)="nextPage()">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+      </svg>
+    </button>
+  </div>
+
+</main>
+
+<!-- ===== DETAIL PANEL ===== -->
+<div class="detail-overlay" *ngIf="isDetailOpen" (click)="closeDetail()"></div>
+<aside class="detail-panel" [class.open]="isDetailOpen">
+  <div class="panel-header">
+    <h2 class="panel-title">Détail du projet</h2>
+    <div class="panel-header-actions">
+      <button class="btn-icon" title="Modifier" (click)="openEditForm()" *ngIf="selectedProject?.status !== 'ARCHIVED'">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+        </svg>
+      </button>
+      <button class="btn-icon btn-danger" title="Supprimer" (click)="deleteProject()" [disabled]="deletingProjectId !== null" *ngIf="selectedProject?.status !== 'ARCHIVED'">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+        </svg>
+      </button>
+      <button class="panel-close" (click)="closeDetail()">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+  <div class="panel-body" *ngIf="selectedProject">
+    <div class="detail-loading" *ngIf="isDetailLoading">
+      <div class="spinner"></div>
+    </div>
+    <ng-container *ngIf="!isDetailLoading">
+
+      <div class="project-detail-header">
+        <h3>{{ selectedProject.name }}</h3>
+        <p class="detail-client">{{ selectedProject.clientName }}</p>
+        <!-- Status with change dropdown -->
+        <div class="status-change-wrap">
+          <button class="status-badge clickable" [ngClass]="getStatusClass(selectedProject.status)"
+                  (click)="toggleStatusDropdown($event)">
+            {{ getStatusLabel(selectedProject.status) }}
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div class="status-dropdown" *ngIf="showStatusDropdown">
+            <button *ngFor="let s of statusOptions" class="status-option" [ngClass]="getStatusClass(s)"
+                    [class.current]="s === selectedProject.status" (click)="changeStatus(s)">
+              {{ getStatusLabel(s) }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-section" *ngIf="selectedProject.description">
+        <h4 class="section-title">Description</h4>
+        <p class="detail-description">{{ selectedProject.description }}</p>
+      </div>
+
+      <div class="detail-section">
+        <h4 class="section-title">Période</h4>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Date de début</span>
+            <span class="info-value">{{ selectedProject.startDate | date:'dd/MM/yyyy' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Date de fin</span>
+            <span class="info-value">{{ selectedProject.endDate ? (selectedProject.endDate | date:'dd/MM/yyyy') : 'En cours' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-section" *ngIf="selectedProject.neededRessource">
+        <h4 class="section-title">Ressources nécessaires</h4>
+        <p class="detail-description">{{ selectedProject.neededRessource }}</p>
+      </div>
+
+      <div class="detail-section" *ngIf="selectedProject.technologies && selectedProject.technologies.length > 0">
+        <h4 class="section-title">Technologies</h4>
+        <div class="techs-list">
+          <span class="tech-tag" *ngFor="let t of selectedProject.technologies">{{ t }}</span>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <div class="section-header-row">
+          <h4 class="section-title">Équipe ({{ selectedProject.team ? selectedProject.team.length : 0 }})</h4>
+          <button class="btn-sm" (click)="openAssignForm()">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+            </svg>
+            Assigner
+          </button>
+        </div>
+        <div >
+          <div class="member-row" *ngFor="let m of selectedProject.team">
+            <div class="member-avatar">{{ getMemberInitials(m) }}</div>
+            <div class="member-info">
+              <span class="member-name">{{ m.firstName }} {{ m.lastName }}</span>
+              <span class="member-role">{{ m.role }}</span>
+              
+            </div>
+            <button class="btn-remove" title="Retirer"
+                    [disabled]="unassigningId === m.assignmentId"
+                    (click)="unassign(m.assignmentId!)" >
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <p class="empty-info" *ngIf="!selectedProject.team || selectedProject.team.length === 0">
+          Aucun membre affecté.
+        </p>
+      </div>
+
+    </ng-container>
+  </div>
+</aside>
+
+<!-- ===== PROJECT FORM MODAL ===== -->
+<div class="modal-overlay" *ngIf="showProjectForm" (click)="closeProjectForm()">
+  <div class="modal-card modal-lg" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>{{ editingProject ? 'Modifier le projet' : 'Nouveau projet' }}</h3>
+      <button class="panel-close" (click)="closeProjectForm()">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="alert-error" *ngIf="projectFormError">{{ projectFormError }}</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nom du projet *</label>
+          <input type="text" class="form-input" [(ngModel)]="projectForm.name" placeholder="Mon projet"/>
+        </div>
+        <div class="form-group">
+          <label>Client *</label>
+          <input type="text" class="form-input" [(ngModel)]="projectForm.clientName" placeholder="Nom du client"/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Description</label>
+        <textarea class="form-input form-textarea" [(ngModel)]="projectForm.description" rows="3" placeholder="Description du projet…"></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Date de début *</label>
+          <input type="date" class="form-input" [(ngModel)]="projectForm.startDate"/>
+        </div>
+        <div class="form-group">
+          <label>Date de fin</label>
+          <input type="date" class="form-input" [(ngModel)]="projectForm.endDate"/>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Statut</label>
+          <select class="form-input" [(ngModel)]="projectForm.status">
+            <option value="PLANNED">Planifié</option>
+            <option value="ACTIVE">En cours</option>
+            <option value="ON_HOLD">En pause</option>
+            <option value="COMPLETED">Terminé</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Technologies</label>
+          <input type="text" class="form-input" [(ngModel)]="projectForm.technologies" placeholder="Java,Angular,Docker"/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Ressources nécessaires</label>
+        <input type="text" class="form-input" [(ngModel)]="projectForm.neededRessource" placeholder="Ex: 2 dev backend, 1 QA"/>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="closeProjectForm()">Annuler</button>
+      <button class="btn-primary" [disabled]="projectFormSubmitting" (click)="submitProject()">
+        {{ projectFormSubmitting ? 'Enregistrement…' : (editingProject ? 'Modifier' : 'Créer') }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ASSIGN MODAL ===== -->
+<div class="modal-overlay" *ngIf="showAssignForm" (click)="closeAssignForm()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Assigner un collaborateur</h3>
+      <button class="panel-close" (click)="closeAssignForm()">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="alert-error" *ngIf="assignFormError">{{ assignFormError }}</div>
+
+      <div class="form-group">
+        <label>Collaborateur *</label>
+        <select class="form-input" [(ngModel)]="assignForm.collaboratorId" [disabled]="loadingCollaborators">
+          <option [ngValue]="0" disabled>{{ loadingCollaborators ? 'Chargement…' : 'Sélectionner un collaborateur' }}</option>
+          <option *ngFor="let c of availableCollaborators" [ngValue]="c.id">
+            {{ c.firstName }} {{ c.lastName }} — {{ c.skills?.slice(0, 3)?.join(', ') }}
+          </option>
+        </select>
+        <span class="form-hint" *ngIf="availableCollaborators.length === 0 && !loadingCollaborators">
+          Aucun collaborateur disponible.
+        </span>
+      </div>
+
+      <div class="form-group">
+        <label>Rôle dans le projet *</label>
+        <input type="text" class="form-input" [(ngModel)]="assignForm.roleName" placeholder="Ex: Développeur Backend"/>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Date de début *</label>
+          <input type="date" class="form-input" [(ngModel)]="assignForm.startDate"/>
+        </div>
+        <div class="form-group">
+          <label>Date de fin</label>
+          <input type="date" class="form-input" [(ngModel)]="assignForm.endDate"/>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="closeAssignForm()">Annuler</button>
+      <button class="btn-primary" [disabled]="assignFormSubmitting" (click)="submitAssignment()">
+        {{ assignFormSubmitting ? 'Assignation…' : 'Assigner' }}
+      </button>
+    </div>
+  </div>
+</div>

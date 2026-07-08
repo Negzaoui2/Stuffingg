@@ -1,0 +1,250 @@
+<header class="topbar">
+  <div class="topbar-breadcrumb">
+    <span>Stuffing</span>
+    <span class="sep">/</span>
+    <span class="current">Mon équipe</span>
+  </div>
+  <div class="topbar-spacer"></div>
+  <button class="topbar-btn" title="Actualiser" (click)="load()">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+    </svg>
+  </button>
+</header>
+
+<main class="content">
+
+  <div class="page-header">
+    <h1>Mon équipe</h1>
+    <p class="page-subtitle">{{ total }} collaborateur(s)</p>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon blue">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value">{{ total }}</div>
+        <div class="stat-label">Total</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon purple">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value">{{ staffedCount }}</div>
+        <div class="stat-label">Staffés</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon green">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+        </svg>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value">{{ availableCount }}</div>
+        <div class="stat-label">Disponibles</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon amber">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value">{{ soonAvailableCount }}</div>
+        <div class="stat-label">Bientôt dispo</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <svg class="search-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+      </svg>
+      <input class="search-input" type="text" placeholder="Rechercher par nom ou email…"
+        [(ngModel)]="searchQuery" (ngModelChange)="onSearchChange()"/>
+      <button *ngIf="searchQuery" class="search-clear" (click)="searchQuery=''; onFilterChange()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <div class="filter-group">
+      <select class="filter-select" [(ngModel)]="availabilityFilter" (ngModelChange)="onFilterChange()">
+        <option value="">Toutes dispos</option>
+        <option value="STAFFED">Staffé</option>
+        <option value="AVAILABLE">Disponible</option>
+        <option value="SOON_AVAILABLE">Bientôt dispo</option>
+      </select>
+      <input class="filter-input" type="text" placeholder="Filtrer par compétence…"
+        [(ngModel)]="skillFilter" (ngModelChange)="onSearchChange()"/>
+    </div>
+  </div>
+
+  <!-- Error -->
+  <div class="alert-error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+  <!-- Loading -->
+  <div class="loading-spinner" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Chargement…</p>
+  </div>
+
+  <!-- Empty -->
+  <div class="empty-state" *ngIf="!isLoading && !errorMessage && collaborators.length === 0">
+    <svg width="56" height="56" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+    </svg>
+    <h3>Aucun collaborateur</h3>
+    <p>Aucun résultat ne correspond à votre recherche.</p>
+  </div>
+
+  <!-- Cards Grid -->
+  <div class="team-grid" *ngIf="!isLoading && collaborators.length > 0">
+    <div class="collab-card" *ngFor="let c of collaborators" (click)="openDetail(c)">
+      <div class="card-top">
+        <div class="collab-avatar" [ngClass]="getAvailabilityClass(c.availability)">
+          {{ getInitials(c) }}
+        </div>
+        <div class="collab-info">
+          <h3>{{ c.firstName }} {{ c.lastName }}</h3>
+          <p class="collab-email">{{ c.email }}</p>
+        </div>
+        <span class="avail-badge" [ngClass]="getAvailabilityClass(c.availability)">
+          {{ getAvailabilityLabel(c.availability) }}
+        </span>
+      </div>
+      <div class="card-body">
+        <div class="collab-project" *ngIf="c.currentProject">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
+          </svg>
+          <span>{{ c.currentProject }}</span>
+        </div>
+        <div class="collab-project" *ngIf="!c.currentProject">
+          <span class="no-project">Pas de projet actif</span>
+        </div>
+        <div class="collab-skills" *ngIf="c.skills.length > 0">
+          <span class="skill-tag" *ngFor="let s of c.skills.slice(0, 4)">{{ s }}</span>
+          <span class="skill-more" *ngIf="c.skills.length > 4">+{{ c.skills.length - 4 }}</span>
+        </div>
+        <div class="collab-available-from" *ngIf="c.availableFrom">
+          Disponible à partir du {{ c.availableFrom | date:'dd/MM/yyyy' }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination" *ngIf="!isLoading && totalPages > 1">
+    <button class="pg-btn" [disabled]="page === 0" (click)="prevPage()">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+      </svg>
+    </button>
+    <span class="pg-info">Page {{ page + 1 }} / {{ totalPages }}</span>
+    <button class="pg-btn" [disabled]="page + 1 >= totalPages" (click)="nextPage()">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+      </svg>
+    </button>
+  </div>
+
+</main>
+
+<!-- ===== DETAIL PANEL ===== -->
+<div class="detail-overlay" *ngIf="isDetailOpen" (click)="closeDetail()"></div>
+<aside class="detail-panel" [class.open]="isDetailOpen">
+  <div class="panel-header">
+    <h2 class="panel-title">Profil collaborateur</h2>
+    <button class="panel-close" (click)="closeDetail()">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+  <div class="panel-body" *ngIf="selectedCollab">
+    <div class="detail-loading" *ngIf="isDetailLoading">
+      <div class="spinner"></div>
+    </div>
+    <ng-container *ngIf="!isDetailLoading">
+      <div class="profile-header">
+        <div class="profile-avatar" [ngClass]="getAvailabilityClass(selectedCollab.availability)">
+          {{ getInitials(selectedCollab) }}
+        </div>
+        <div class="profile-info">
+          <h3>{{ selectedCollab.firstName }} {{ selectedCollab.lastName }}</h3>
+          <p class="profile-email">{{ selectedCollab.email }}</p>
+          <span class="avail-badge" [ngClass]="getAvailabilityClass(selectedCollab.availability)">
+            {{ getAvailabilityLabel(selectedCollab.availability) }}
+          </span>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <h4 class="section-title">Informations</h4>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Département</span>
+            <span class="info-value">{{ selectedCollab.department || '—' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Téléphone</span>
+            <span class="info-value">{{ selectedCollab.phone || '—' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <h4 class="section-title">Compétences</h4>
+        <div class="skills-list" *ngIf="selectedCollab.skills.length > 0">
+          <span class="skill-tag" *ngFor="let s of selectedCollab.skills">{{ s }}</span>
+        </div>
+        <p class="empty-info" *ngIf="selectedCollab.skills.length === 0">Aucune compétence.</p>
+      </div>
+
+      <div class="detail-section">
+        <h4 class="section-title">Affectations</h4>
+        <div *ngIf="selectedCollab.assignments && selectedCollab.assignments.length > 0">
+          <div class="assignment-card" *ngFor="let a of selectedCollab.assignments">
+            <div class="assignment-header">
+              <span class="assignment-project">{{ a.projectName }}</span>
+              <ng-container *ngIf="getEffectiveAssignmentStatus(a) as effectiveStatus">
+                <span class="assignment-status"
+                  [class.s-active]="effectiveStatus === 'ACTIVE'"
+                  [class.s-done]="effectiveStatus === 'COMPLETED'"
+                  [class.s-hold]="effectiveStatus === 'ON_HOLD'">
+                  {{ effectiveStatus === 'ACTIVE' ? 'En cours' : effectiveStatus === 'COMPLETED' ? 'Terminé' : 'En pause' }}
+                </span>
+              </ng-container>
+            </div>
+            <div class="assignment-meta">
+              <span *ngIf="a.clientName">{{ a.clientName }}</span>
+              <span *ngIf="a.roleName"> · {{ a.roleName }}</span>
+              <span class="assignment-dates">
+                {{ a.startDate | date:'MMM yyyy' }}
+                <span *ngIf="a.endDate"> → {{ a.endDate | date:'MMM yyyy' }}</span>
+                <span *ngIf="!a.endDate"> → En cours</span>
+              </span>
+            </div>
+          </div>
+        </div>
+        <p class="empty-info" *ngIf="!selectedCollab.assignments || selectedCollab.assignments.length === 0">
+          Aucune affectation.
+        </p>
+      </div>
+    </ng-container>
+  </div>
+</aside>

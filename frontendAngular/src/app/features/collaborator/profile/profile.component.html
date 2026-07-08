@@ -1,0 +1,110 @@
+<div class="page">
+  @if (isLoading) {
+    <div class="loading"><div class="spinner"></div></div>
+  }
+
+  @if (!isLoading && profile) {
+    <!-- Identity card -->
+    <div class="id-card">
+      <div class="avatar">{{ profile.firstName.charAt(0) }}{{ profile.lastName.charAt(0) }}</div>
+      <div class="id-info">
+        <h1>{{ profile.firstName }} {{ profile.lastName }}</h1>
+        <p class="id-role">{{ profile.role }}</p>
+        <p class="id-dept">{{ profile.department }}</p>
+      </div>
+    </div>
+
+    <!-- Info grid -->
+    <div class="info-grid">
+      <div class="info-card">
+        <h3>Informations personnelles</h3>
+        <div class="info-row">
+          <span class="info-label">Email</span>
+          <span class="info-value">{{ profile.email }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Téléphone</span>
+          @if (!editingPhone) {
+            <span class="info-value">
+              {{ profile.phone || '—' }}
+              <button class="btn-inline" (click)="startPhoneEdit()">✎</button>
+            </span>
+          } @else {
+            <span class="info-edit">
+              <input type="tel" [(ngModel)]="phoneValue" placeholder="+33 6 00 00 00 00">
+              <button class="btn-sm btn-save" [disabled]="savingPhone" (click)="savePhone()">{{ savingPhone ? '…' : '✓' }}</button>
+              <button class="btn-sm btn-cancel" (click)="cancelPhoneEdit()">✕</button>
+            </span>
+          }
+        </div>
+        <div class="info-row">
+          <span class="info-label">Date d'arrivée</span>
+          <span class="info-value">{{ profile.joinedAt }}</span>
+        </div>
+      </div>
+
+      <!-- Skills card (read mode) -->
+      @if (!editingSkills) {
+        <div class="info-card">
+          <div class="card-header">
+            <h3>Compétences</h3>
+            <button class="btn-inline" (click)="startSkillsEdit()">Modifier</button>
+          </div>
+          @if (profile.skills.length === 0) {
+            <p class="empty-msg">Aucune compétence renseignée</p>
+          }
+          <div class="skills-list">
+            @for (s of profile.skills; track s.name) {
+              <div class="skill-chip">
+                <span class="skill-name">{{ s.name }}</span>
+                <span class="skill-lvl" [ngClass]="getLevelClass(s.level)">{{ getLevelLabel(s.level) }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Skills card (edit mode) -->
+      @if (editingSkills) {
+        <div class="info-card edit-skills">
+          <div class="card-header">
+            <h3>Modifier mes compétences</h3>
+          </div>
+          <div class="skills-edit-list">
+            @for (s of skillsDraft; track s.name; let i = $index) {
+              <div class="skill-edit-row">
+                <span class="se-name">{{ s.name }}</span>
+                <select [(ngModel)]="s.level" class="se-level">
+                  @for (lvl of skillLevels; track lvl) {
+                    <option [value]="lvl">{{ getLevelLabel(lvl) }}</option>
+                  }
+                </select>
+                <button class="btn-remove" (click)="removeSkill(i)">✕</button>
+              </div>
+            }
+          </div>
+          <div class="add-skill-row">
+            <div class="autocomplete-wrap">
+              <input type="text" [(ngModel)]="newSkillName" (ngModelChange)="onSkillSearch($event)"
+                     placeholder="Ajouter une compétence…" (keydown.enter)="addCustomSkill()">
+              @if (suggestions.length > 0) {
+                <ul class="suggestions">
+                  @for (sg of suggestions; track sg) {
+                    <li (click)="selectSuggestion(sg)">{{ sg }}</li>
+                  }
+                </ul>
+              }
+            </div>
+            <button class="btn-sm btn-add" (click)="addCustomSkill()">+</button>
+          </div>
+          <div class="edit-actions">
+            <button class="btn-secondary" (click)="cancelSkillsEdit()">Annuler</button>
+            <button class="btn-primary" [disabled]="savingSkills" (click)="saveSkills()">
+              {{ savingSkills ? 'Enregistrement…' : 'Enregistrer' }}
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

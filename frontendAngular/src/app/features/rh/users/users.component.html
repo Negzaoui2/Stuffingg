@@ -1,0 +1,362 @@
+<!-- ===== TOPBAR ===== -->
+<header class="rh-topbar">
+  <div class="topbar-breadcrumb">
+    <span>StuffingAdmin</span>
+    <span class="sep">/</span>
+    <span class="current">Utilisateurs</span>
+  </div>
+  <div class="topbar-spacer"></div>
+  <div class="topbar-actions">
+    <app-notification-bell></app-notification-bell>
+    <button class="topbar-btn" title="Actualiser" (click)="load()">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<!-- ===== MAIN CONTENT ===== -->
+<main class="rh-content">
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-title-block">
+      <h1>Gestion des utilisateurs</h1>
+      <p class="page-subtitle">{{ total }} utilisateur(s) au total</p>
+    </div>
+  </div>
+
+  <!-- Stats Row -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon total">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value">{{ total }}</div>
+        <div class="stat-label">Total utilisateurs</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon approved">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value">{{ activeCount }}</div>
+        <div class="stat-label">Actifs</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon rejected">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value">{{ inactiveCount }}</div>
+        <div class="stat-label">Inactifs</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toolbar: Search + Filters -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <svg class="search-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+      </svg>
+      <input
+        class="search-input"
+        type="text"
+        placeholder="Rechercher par nom ou email…"
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="onSearchChange()"
+      />
+      <button *ngIf="searchQuery" class="search-clear" (click)="searchQuery=''; onFilterChange()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="filter-group">
+      <select class="filter-select" [(ngModel)]="roleFilter" (ngModelChange)="onFilterChange()">
+        <option value="">Tous les rôles</option>
+        <option value="ADMIN">Admin</option>
+        <option value="DELIVERY_MANAGER">Delivery Manager</option>
+        <option value="COLLABORATEUR">Collaborateur</option>
+      </select>
+
+      <select class="filter-select" [(ngModel)]="statusFilter" (ngModelChange)="onFilterChange()">
+        <option value="">Tous les statuts</option>
+        <option value="true">Actif</option>
+        <option value="false">Inactif</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Alert -->
+  <div class="alert-error" *ngIf="errorMessage">
+    <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20">
+      <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm1 15H9v-2h2v2zm0-4H9V5h2v6z"/>
+    </svg>
+    {{ errorMessage }}
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-spinner" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Chargement des utilisateurs...</p>
+  </div>
+
+  <!-- Empty state -->
+  <div class="empty-state" *ngIf="!isLoading && !errorMessage && users.length === 0">
+    <svg width="56" height="56" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+    </svg>
+    <h3>Aucun utilisateur</h3>
+    <p>Aucun utilisateur ne correspond à votre recherche.</p>
+  </div>
+
+  <!-- Users Table -->
+  <div class="table-wrap" *ngIf="!isLoading && users.length > 0">
+    <table class="users-table">
+      <thead>
+        <tr>
+          <th>Utilisateur</th>
+          <th>Rôle</th>
+          <th>Statut</th>
+          <th>Date d'inscription</th>
+          <th>Dernière connexion</th>
+          <th class="th-actions">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users; trackBy: trackByUserId" (click)="openDetail(user)" class="table-row">
+          <td class="td-user">
+            <div class="user-avatar" [class.inactive]="!user.isActive">
+              {{ getInitials(user) }}
+            </div>
+            <div class="user-info">
+              <span class="user-fullname">{{ user.firstName }} {{ user.lastName }}</span>
+              <span class="user-email">{{ user.email }}</span>
+            </div>
+          </td>
+          <td>
+            <span class="role-badge" [ngClass]="getRoleClass(user.role)">
+              {{ getRoleLabel(user.role) }}
+            </span>
+          </td>
+          <td>
+            <span class="status-badge" [class.active]="user.isActive" [class.inactive]="!user.isActive">
+              <span class="status-dot"></span>
+              {{ user.isActive ? 'Actif' : 'Inactif' }}
+            </span>
+          </td>
+          <td class="td-date">
+            {{ user.createdAt ? (user.createdAt | date:'dd/MM/yyyy') : '—' }}
+          </td>
+          <td class="td-date">
+            {{ user.lastLogin ? (user.lastLogin | date:'dd/MM/yyyy') : '—' }}
+          </td>
+          <td class="td-actions" (click)="$event.stopPropagation()">
+            <button
+              class="btn-action"
+              [class.btn-deactivate]="user.isActive"
+              [class.btn-activate]="!user.isActive"
+              [title]="user.isActive ? 'Désactiver' : 'Activer'"
+              [disabled]="togglingIds.has(user.id)"
+              (click)="toggleStatus(user, $event)"
+            >
+              <svg *ngIf="user.isActive" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+              </svg>
+              <svg *ngIf="!user.isActive" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              {{ user.isActive ? 'Désactiver' : 'Activer' }}
+            </button>
+            <button class="btn-action btn-detail" title="Voir le profil" (click)="openDetail(user)">
+              <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+              </svg>
+              Profil
+            </button>
+            <button class="btn-action btn-delete" title="Supprimer" (click)="confirmDelete(user, $event)">
+              <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+              </svg>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination" *ngIf="!isLoading && totalPages > 1">
+    <button class="pg-btn" [disabled]="page === 0" (click)="prevPage()">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+      </svg>
+    </button>
+    <span class="pg-info">Page {{ page + 1 }} / {{ totalPages }}</span>
+    <button class="pg-btn" [disabled]="page + 1 >= totalPages" (click)="nextPage()">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+      </svg>
+    </button>
+  </div>
+
+</main>
+
+<!-- ===== DELETE CONFIRMATION OVERLAY ===== -->
+<div class="modal-overlay" *ngIf="userToDelete" (click)="cancelDelete()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-icon">
+      <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+      </svg>
+    </div>
+    <h3 class="modal-title">Supprimer l'utilisateur ?</h3>
+    <p class="modal-body">
+      Vous êtes sur le point de supprimer
+      <strong>{{ userToDelete.firstName }} {{ userToDelete.lastName }}</strong>.
+      Cette action est irréversible.
+    </p>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" (click)="cancelDelete()">Annuler</button>
+      <button class="btn-modal-confirm" (click)="doDelete()">Supprimer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DETAIL PANEL ===== -->
+<div class="detail-overlay" *ngIf="isDetailOpen" (click)="closeDetail()"></div>
+<aside class="detail-panel" [class.open]="isDetailOpen">
+
+  <div class="panel-header">
+    <h2 class="panel-title">Profil utilisateur</h2>
+    <button class="panel-close" (click)="closeDetail()">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="panel-body" *ngIf="selectedUser">
+
+    <!-- Loading detail -->
+    <div class="detail-loading" *ngIf="isDetailLoading">
+      <div class="spinner"></div>
+    </div>
+
+    <ng-container *ngIf="!isDetailLoading">
+
+      <!-- User header -->
+      <div class="profile-header">
+        <div class="profile-avatar" [class.inactive]="!selectedUser.isActive">
+          {{ getInitials(selectedUser) }}
+        </div>
+        <div class="profile-info">
+          <h3>{{ selectedUser.firstName }} {{ selectedUser.lastName }}</h3>
+          <p class="profile-email">{{ selectedUser.email }}</p>
+          <div class="profile-badges">
+            <span class="role-badge" [ngClass]="getRoleClass(selectedUser.role)">
+              {{ getRoleLabel(selectedUser.role) }}
+            </span>
+            <span class="status-badge" [class.active]="selectedUser.isActive" [class.inactive]="!selectedUser.isActive">
+              <span class="status-dot"></span>
+              {{ selectedUser.isActive ? 'Actif' : 'Inactif' }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Info Grid -->
+      <div class="detail-section">
+        <h4 class="section-title">Informations</h4>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Département</span>
+            <span class="info-value">{{ selectedUser.department || '—' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Téléphone</span>
+            <span class="info-value">{{ selectedUser.phone || '—' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Inscrit le</span>
+            <span class="info-value">{{ selectedUser.createdAt ? (selectedUser.createdAt | date:'dd/MM/yyyy') : '—' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Dernière connexion</span>
+            <span class="info-value">{{ selectedUser.lastLogin ? (selectedUser.lastLogin | date:'dd/MM/yyyy') : '—' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Skills -->
+      <div class="detail-section" *ngIf="selectedUser.skills && selectedUser.skills.length > 0">
+        <h4 class="section-title">Compétences</h4>
+        <div class="skills-list">
+          <span class="skill-tag" *ngFor="let skill of selectedUser.skills">{{ skill }}</span>
+        </div>
+      </div>
+      <div class="detail-section" *ngIf="!selectedUser.skills || selectedUser.skills.length === 0">
+        <h4 class="section-title">Compétences</h4>
+        <p class="empty-info">Aucune compétence renseignée.</p>
+      </div>
+
+      <!-- Assignments -->
+      <div class="detail-section">
+        <h4 class="section-title">Affectations</h4>
+        <div *ngIf="selectedUser.assignments && selectedUser.assignments.length > 0">
+          <div class="assignment-card" *ngFor="let a of selectedUser.assignments">
+            <div class="assignment-header">
+              <span class="assignment-project">{{ a.projectName }}</span>
+              <span class="assignment-status" [class.status-active]="a.status === 'ACTIVE'" [class.status-done]="a.status === 'COMPLETED'" [class.status-hold]="a.status === 'ON_HOLD'">
+                {{ getAssignmentStatusLabel(a.status) }}
+              </span>
+            </div>
+            <div class="assignment-meta">
+              <span *ngIf="a.clientName">{{ a.clientName }}</span>
+              <span *ngIf="a.roleName"> · {{ a.roleName }}</span>
+              <span class="assignment-dates">
+                {{ a.startDate | date:'MMM yyyy' }}
+                <span *ngIf="a.endDate"> → {{ a.endDate | date:'MMM yyyy' }}</span>
+                <span *ngIf="!a.endDate"> → En cours</span>
+              </span>
+            </div>
+          </div>
+        </div>
+        <p class="empty-info" *ngIf="!selectedUser.assignments || selectedUser.assignments.length === 0">
+          Aucune affectation enregistrée.
+        </p>
+      </div>
+
+      <!-- Panel Actions -->
+      <div class="panel-actions">
+        <button
+          class="btn-panel"
+          [class.btn-deactivate]="selectedUser.isActive"
+          [class.btn-activate]="!selectedUser.isActive"
+          [disabled]="togglingIds.has(selectedUser.id)"
+          (click)="toggleStatus(selectedUser, $event)"
+        >
+          {{ selectedUser.isActive ? 'Désactiver le compte' : 'Activer le compte' }}
+        </button>
+        <button class="btn-panel btn-delete" (click)="confirmDelete(selectedUser, $event)">
+          Supprimer l'utilisateur
+        </button>
+      </div>
+
+    </ng-container>
+  </div>
+</aside>

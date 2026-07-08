@@ -1,0 +1,254 @@
+
+    <!-- Topbar -->
+    <header class="rh-topbar">
+      <div class="topbar-breadcrumb">
+        <span>StuffingAdmin</span>
+        <span class="sep">/</span>
+        <span class="current">Demandes d'accès</span>
+      </div>
+      <div class="topbar-spacer"></div>
+      <div class="topbar-actions">
+        <app-notification-bell></app-notification-bell>
+        <button class="topbar-btn" title="Actualiser" (click)="load()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <main class="rh-content">
+
+      <!-- Page Header -->
+      <div class="page-header">
+        <div class="page-title-block">
+          <h1>Gestion des accès</h1>
+          <p class="page-subtitle">{{ stats.total }} demande(s) au total · Dernière mise à jour à l'instant</p>
+        </div>
+      </div>
+
+      <!-- Stats Row -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-icon total">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+            </svg>
+          </div>
+          <div class="stat-body">
+            <div class="stat-value">{{ stats.total }}</div>
+            <div class="stat-label">Total demandes</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon pending">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <div class="stat-body">
+            <div class="stat-value">{{ stats.pending }}</div>
+            <div class="stat-label">En attente</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon approved">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <div class="stat-body">
+            <div class="stat-value">{{ stats.approved }}</div>
+            <div class="stat-label">Approuvées</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon rejected">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9v4m0 4h.01"/>
+            </svg>
+          </div>
+          <div class="stat-body">
+            <div class="stat-value">{{ stats.rejected }}</div>
+            <div class="stat-label">Rejetées</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter Bar -->
+      <div class="filter-bar">
+        <span class="filter-label">Filtrer :</span>
+        <button class="btn-filter" [class.active]="filterStatus === null" (click)="filterByStatus(null)">
+          Toutes <span class="badge">{{ stats.total }}</span>
+        </button>
+        <button class="btn-filter" [class.active]="filterStatus === 'PENDING'" (click)="filterByStatus('PENDING')">
+          En attente <span class="badge">{{ stats.pending }}</span>
+        </button>
+        <button class="btn-filter" [class.active]="filterStatus === 'APPROVED'" (click)="filterByStatus('APPROVED')">
+          Approuvées <span class="badge">{{ stats.approved }}</span>
+        </button>
+        <button class="btn-filter" [class.active]="filterStatus === 'REJECTED'" (click)="filterByStatus('REJECTED')">
+          Rejetées <span class="badge">{{ stats.rejected }}</span>
+        </button>
+      </div>
+
+      <!-- Alert -->
+      <div class="alert-error" *ngIf="errorMessage">
+        <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm1 15H9v-2h2v2zm0-4H9V5h2v6z"/>
+        </svg>
+        {{ errorMessage }}
+      </div>
+
+      <!-- Loading -->
+      <div class="loading-spinner" *ngIf="isLoading">
+        <div class="spinner"></div>
+        <p>Chargement des demandes...</p>
+      </div>
+
+      <!-- Empty -->
+      <div class="empty-state" *ngIf="!isLoading && !errorMessage && filteredRequests.length === 0">
+        <svg width="56" height="56" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        <h3>Aucune demande</h3>
+        <p>Il n'y a aucune demande d'accès correspondant à ce filtre.</p>
+      </div>
+
+      <!-- Grid -->
+      <div class="requests-grid" *ngIf="!isLoading && filteredRequests.length > 0">
+        <div class="request-card"
+             *ngFor="let request of filteredRequests"
+             [class.pending]="request.status === 'PENDING'"
+             [class.approved]="request.status === 'APPROVED'"
+             [class.rejected]="request.status === 'REJECTED'">
+
+          <div class="card-header">
+            <div class="user-avatar">
+              {{ request.firstName.charAt(0) }}{{ request.lastName.charAt(0) }}
+            </div>
+            <div class="user-info">
+              <h3>{{ request.firstName }} {{ request.lastName }}</h3>
+              <p class="email">{{ request.email }}</p>
+            </div>
+            <span class="status-badge" [ngClass]="request.status.toLowerCase()">
+              {{ getStatusLabel(request.status) }}
+            </span>
+          </div>
+
+          <div class="card-body">
+            <div class="info-row">
+              <span class="label">Entreprise</span>
+              <span class="value">{{ request.company }}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">Poste</span>
+              <span class="value">{{ request.jobTitle }}</span>
+            </div>
+            <div class="info-row" *ngIf="request.phone">
+              <span class="label">Téléphone</span>
+              <span class="value">{{ request.phone }}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">Date</span>
+              <span class="value">{{ request.createdAt | date:'dd/MM/yyyy à HH:mm' }}</span>
+            </div>
+            <div *ngIf="request.message">
+              <div class="info-row"><span class="label">Message</span></div>
+              <p class="message">{{ request.message }}</p>
+            </div>
+          </div>
+
+          <div class="card-footer" *ngIf="request.status === 'PENDING'">
+            <button class="btn-approve" (click)="openApproveModal(request)">
+              <svg width="15" height="15" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+              </svg>
+              Approuver
+            </button>
+            <button class="btn-reject" (click)="openRejectModal(request)">
+              <svg width="15" height="15" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
+              </svg>
+              Rejeter
+            </button>
+          </div>
+
+          <div class="card-footer processed" *ngIf="request.status !== 'PENDING'">
+            <span class="processed-info">
+              Traité {{ request.processedAt | date:'dd/MM/yyyy' }}
+              <span *ngIf="request.processedBy"> par {{ request.processedBy }}</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Approve Modal -->
+    <div class="modal-overlay" *ngIf="showApproveModal" (click)="closeApproveModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>Approuver la demande</h2>
+          <button class="modal-close" (click)="closeApproveModal()">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="modal-body" *ngIf="approveTarget">
+          <div class="modal-user-info">
+            <div class="modal-avatar">
+              {{ approveTarget.firstName.charAt(0) }}{{ approveTarget.lastName.charAt(0) }}
+            </div>
+            <div>
+              <strong>{{ approveTarget.firstName }} {{ approveTarget.lastName }}</strong>
+              <p>{{ approveTarget.email }}</p>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="role-select">Rôle à attribuer</label>
+            <select id="role-select" [(ngModel)]="selectedRole" (ngModelChange)="onRoleChange()">
+              <option value="COLLABORATEUR">Collaborateur</option>
+              <option value="DELIVERY_MANAGER">Delivery Manager</option>
+              <option value="ADMIN">Administrateur</option>
+            </select>
+          </div>
+
+          <div class="form-group manager-field" *ngIf="selectedRole === 'COLLABORATEUR'">
+            <label for="manager-select">Assigner à un manager <span class="optional-tag">(optionnel)</span></label>
+            <select id="manager-select" [(ngModel)]="selectedManagerId" [disabled]="managersLoading">
+              <option [ngValue]="null">-- Aucun (assigner plus tard) --</option>
+              <option *ngFor="let mgr of managers" [ngValue]="mgr.id">
+                {{ mgr.firstName }} {{ mgr.lastName }} ({{ mgr.email }})
+              </option>
+            </select>
+            <p class="field-hint" *ngIf="managersLoading">Chargement des managers...</p>
+          </div>
+
+          <div class="form-group departement-field" *ngIf="selectedRole === 'COLLABORATEUR' || selectedRole === 'DELIVERY_MANAGER'">
+            <label for="departement-select">Affecter un département <span class="optional-tag">(optionnel)</span></label>
+            <select id="departement-select" [(ngModel)]="selectedDepartementId" [disabled]="departementsLoading">
+              <option [ngValue]="null">-- Aucun (affecter plus tard) --</option>
+              <option *ngFor="let dep of departements" [ngValue]="dep.id">
+                {{ dep.name }}
+              </option>
+            </select>
+            <p class="field-hint" *ngIf="departementsLoading">Chargement des départements...</p>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn-cancel" (click)="closeApproveModal()">Annuler</button>
+          <button class="btn-confirm" (click)="submitApproval()">
+            <svg width="15" height="15" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+            </svg>
+            Confirmer l'approbation
+          </button>
+        </div>
+      </div>
+    </div>

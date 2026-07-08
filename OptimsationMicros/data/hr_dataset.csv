@@ -1,0 +1,16 @@
+EmployeeId,FullName,Department,JobRole,MainDomain,Skills,Seniority,Certifications,AbsenceDaysLast12Months,MainAbsenceType
+1,Ali Ben Ahmed,Engineering,Backend Developer,Backend,"Java,Spring Boot,Microservices,Docker,Kubernetes",Senior,"AWS Solutions Architect,Oracle Certified",12,Congé annuel
+2,Sara El Fassi,Engineering,Full Stack Developer,Full Stack,"Java,Angular,TypeScript,Spring Boot,PostgreSQL",Senior,"Scrum Master,AWS Developer",8,Congé annuel
+3,Karim Idrissi,Engineering,Frontend Developer,Frontend,"Angular,TypeScript,React,HTML,CSS,Tailwind",Mid,"Google Cloud Associate",15,Maladie
+4,Fatima Zahra Benali,Engineering,Data Engineer,Data,"Python,Spark,SQL,Airflow,Kafka",Senior,"Databricks Certified,GCP Professional",5,Congé annuel
+5,Youssef Tazi,Engineering,DevOps Engineer,DevOps,"Docker,Kubernetes,Terraform,Jenkins,AWS,Linux",Senior,"CKA,AWS DevOps Pro",10,Congé annuel
+6,Nadia Chraibi,Engineering,Backend Developer,Backend,"Python,FastAPI,Django,PostgreSQL,Redis",Mid,"AWS Developer Associate",20,Congé maternité
+7,Omar Bennani,Engineering,Mobile Developer,Mobile,"Flutter,Dart,Kotlin,Swift,Firebase",Mid,"Google Associate Android",7,Congé annuel
+8,Imane Hajji,Engineering,QA Engineer,Testing,"Selenium,JUnit,Postman,Cypress,JMeter",Mid,,18,Maladie
+9,Rachid Amrani,Engineering,Tech Lead,Backend,"Java,Spring Boot,Architecture,Microservices,Kafka,Docker",Lead,"TOGAF,AWS Solutions Architect Pro",3,Congé annuel
+10,Salma Ouazzani,Engineering,Data Scientist,Data,"Python,TensorFlow,Scikit-learn,NLP,Pandas,SQL",Senior,"TensorFlow Developer,AWS ML Specialty",9,Congé annuel
+11,Mehdi Lahlou,Engineering,Frontend Developer,Frontend,"React,Next.js,TypeScript,GraphQL,Tailwind",Junior,,22,Congé annuel
+12,Hanane Bouzid,Engineering,Backend Developer,Backend,"Node.js,Express,MongoDB,TypeScript,RabbitMQ",Mid,"MongoDB Certified Developer",14,Congé annuel
+13,Amine Kettani,Engineering,Cloud Architect,Cloud,"AWS,Azure,Terraform,Kubernetes,Serverless",Senior,"AWS Solutions Architect Pro,Azure Expert",6,Congé annuel
+14,Loubna Filali,Engineering,Scrum Master,Management,"Agile,Scrum,Jira,Confluence,Kanban",Senior,"PSM II,SAFe Agilist",11,Congé annuel
+15,Zakaria Mohammadi,Engineering,Full Stack Developer,Full Stack,"Java,Angular,Spring Boot,Docker,PostgreSQL",Junior,,25,Maladie

@@ -1,0 +1,113 @@
+<div class="page">
+  <header class="page-header">
+    <h1>Mes Affectations</h1>
+    <p class="page-sub">Historique de vos missions</p>
+  </header>
+
+  <!-- Filters -->
+  <div class="toolbar">
+    <select class="filter-select" [(ngModel)]="statusFilter" (ngModelChange)="onFilterChange()">
+      <option value="">Tous les statuts</option>
+      <option value="ACTIVE">En cours</option>
+      <option value="COMPLETED">Terminé</option>
+      <option value="ON_HOLD">En pause</option>
+      <option value="PLANNED">Planifié</option>
+    </select>
+    <span class="result-count">{{ total }} affectation(s)</span>
+  </div>
+
+  @if (isLoading) {
+    <div class="loading"><div class="spinner"></div></div>
+  }
+
+  @if (!isLoading && assignments.length === 0) {
+    <div class="empty">Aucune affectation trouvée</div>
+  }
+
+  @if (!isLoading && assignments.length > 0) {
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Projet</th><th>Client</th><th>Rôle</th><th>Début</th><th>Fin</th><th>Statut</th><th>Technologies</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (a of assignments; track a.id) {
+            <tr (click)="openDetail(a)" class="row-clickable">
+              <td class="col-project">{{ a.projectName }}</td>
+              <td>{{ a.clientName }}</td>
+              <td>{{ a.roleName }}</td>
+              <td>{{ a.startDate }}</td>
+              <td>{{ a.endDate }}</td>
+              <td><span class="badge" [ngClass]="getStatusClass(a.status)">{{ getStatusLabel(a.status) }}</span></td>
+              <td>
+                <div class="tech-list">
+                  @for (t of a.technologies; track t) {
+                    <span class="tech-tag">{{ t }}</span>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    @if (totalPages > 1) {
+      <div class="pagination">
+        <button class="pg-btn" [disabled]="page === 0" (click)="prevPage()">← Précédent</button>
+        <span class="pg-info">{{ page + 1 }} / {{ totalPages }}</span>
+        <button class="pg-btn" [disabled]="page + 1 >= totalPages" (click)="nextPage()">Suivant →</button>
+      </div>
+    }
+  }
+
+  <!-- Detail Modal -->
+  @if (showDetail) {
+    <div class="modal-overlay" (click)="closeDetail()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>Détail de l'affectation</h2>
+          <button class="modal-close" (click)="closeDetail()">✕</button>
+        </div>
+        @if (detailLoading) {
+          <div class="loading"><div class="spinner"></div></div>
+        }
+        @if (!detailLoading && selectedAssignment) {
+          <div class="modal-body">
+            <div class="detail-row"><span class="dlabel">Projet</span><span class="dvalue">{{ selectedAssignment.projectName }}</span></div>
+            <div class="detail-row"><span class="dlabel">Client</span><span class="dvalue">{{ selectedAssignment.clientName }}</span></div>
+            <div class="detail-row"><span class="dlabel">Rôle</span><span class="dvalue">{{ selectedAssignment.roleName }}</span></div>
+            <div class="detail-row"><span class="dlabel">Période</span><span class="dvalue">{{ selectedAssignment.startDate }} → {{ selectedAssignment.endDate }}</span></div>
+            <div class="detail-row"><span class="dlabel">Statut</span><span class="dvalue"><span class="badge" [ngClass]="getStatusClass(selectedAssignment.status)">{{ getStatusLabel(selectedAssignment.status) }}</span></span></div>
+            @if (selectedAssignment.projectDescription) {
+              <div class="detail-row full"><span class="dlabel">Description</span><p class="dvalue">{{ selectedAssignment.projectDescription }}</p></div>
+            }
+            @if (selectedAssignment.team && selectedAssignment.team.length > 0) {
+              <div class="detail-section">
+                <h3>Équipe projet</h3>
+                <div class="team-list">
+                  @for (m of selectedAssignment.team; track m.firstName + m.lastName) {
+                    <div class="team-member">
+                      <div class="member-ava">{{ m.firstName.charAt(0) }}{{ m.lastName.charAt(0) }}</div>
+                      <div><div class="member-name">{{ m.firstName }} {{ m.lastName }}</div><div class="member-role">{{ m.role }}</div></div>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+            @if (selectedAssignment.status === 'ACTIVE') {
+              <div class="modal-actions">
+                <button class="btn-complete" (click)="completeAssignment()" [disabled]="completingId === selectedAssignment.id">
+                  {{ completingId === selectedAssignment.id ? 'En cours...' : 'Marquer comme terminée' }}
+                </button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

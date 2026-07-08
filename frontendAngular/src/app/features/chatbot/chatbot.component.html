@@ -1,0 +1,89 @@
+<div class="chatbot-container">
+  <!-- Header -->
+  <div class="chatbot-header">
+    <div class="header-left">
+      <div class="bot-avatar">
+        <span class="avatar-icon">🤖</span>
+      </div>
+      <div class="header-info">
+        <h2>Assistant RH SopraHR</h2>
+        <span class="status-online">● En ligne</span>
+      </div>
+    </div>
+    <button class="btn-clear" (click)="clearChat()" title="Nouvelle conversation">
+      🗑️
+    </button>
+  </div>
+
+  <div class="accent-bar"></div>
+
+  <!-- Messages -->
+  <div class="chatbot-messages" #messagesContainer>
+
+    @if (chat.messages().length === 0) {
+      <!-- État vide : message de bienvenue -->
+      <div class="welcome-section">
+        <div class="welcome-icon">💬</div>
+        <h3>Bienvenue sur l'Assistant RH</h3>
+        <p>Posez-moi une question sur les employés, départements, absences, staffing…</p>
+
+        <div class="suggestions-grid">
+          @for (s of suggestions; track s) {
+            <button class="suggestion-chip" (click)="sendSuggestion(s)">
+              {{ s }}
+            </button>
+          }
+        </div>
+      </div>
+    }
+
+    @for (msg of chat.messages(); track $index) {
+      <div class="message-row" [class.user-row]="msg.role === 'user'" [class.bot-row]="msg.role === 'assistant'">
+        @if (msg.role === 'assistant') {
+          <div class="msg-avatar bot-avatar-small">🤖</div>
+        }
+        <div class="message-bubble" [class.user-bubble]="msg.role === 'user'" [class.bot-bubble]="msg.role === 'assistant'">
+          <div class="message-content" [innerHTML]="msg.content"></div>
+          @if (msg.downloadUrl) {
+            <a class="btn-download" [href]="backendUrl + msg.downloadUrl" target="_blank" rel="noopener">
+              <span class="download-icon">📥</span> Télécharger le fichier
+            </a>
+          }
+        </div>
+      </div>
+    }
+
+    @if (chat.loading()) {
+      <div class="message-row bot-row">
+        <div class="msg-avatar bot-avatar-small">🤖</div>
+        <div class="message-bubble bot-bubble typing-bubble">
+          <div class="typing-indicator">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Input -->
+  <div class="chatbot-input-area">
+    <div class="input-wrapper">
+      <input
+        class="chat-input"
+        type="text"
+        placeholder="Posez votre question RH..."
+        [ngModel]="userInput()"
+        (ngModelChange)="userInput.set($event)"
+        (keydown)="onKeyDown($event)"
+        [disabled]="chat.loading()"
+      />
+      <button
+        class="btn-send"
+        (click)="send()"
+        [disabled]="!userInput().trim() || chat.loading()"
+      >
+        ➤
+      </button>
+    </div>
+  </div>
+</div>
