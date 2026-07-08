@@ -54,6 +54,13 @@ jobs:
 
       - name: Build et tests Maven
         working-directory: ./backendSpringg
+        env:
+          KEYCLOAK_SERVER_URL: http://localhost:8180
+          KEYCLOAK_REALM: stuffing
+          SPRING_DATASOURCE_URL: jdbc:h2:mem:testdb;MODE=PostgreSQL
+          SPRING_DATASOURCE_USERNAME: sa
+          SPRING_DATASOURCE_PASSWORD: ""
+          APP_MAIL_ENABLED: "false"
         run: mvn -B verify
 
       - name: Connexion a GHCR
